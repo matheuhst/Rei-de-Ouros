@@ -10,21 +10,31 @@ header{
     overflow: hidden;
 }
 
-header::before{
-    content: "♦";
-    position: absolute;
+header::before,
+header::after{
 
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+content:"♦";
+position:absolute;
 
-    font-size: 8em;   /* escala com o header */
-    line-height: 1;
+top:50%;
+transform:translateY(-50%);
 
-    color: rgba(255, 0, 0, 0.12); /* mais visível mas ainda sutil */
+font-size:8em;
 
-    pointer-events: none;
+color:rgba(255,0,0,0.12);
+
+pointer-events:none;
+
 }
+
+header::before{
+left:10%;
+}
+
+header::after{
+right:10%;
+}
+
 header h1,
 header h2,
 header h3{
