@@ -11,7 +11,7 @@ header{
 }
 
 header::before{
-    content: "♦";
+    content: "♦                         ♦                       ♦";
     
     position: absolute;
     top: 50%;
@@ -21,7 +21,7 @@ header::before{
 
     font-size: 180px;
 
-    color: rgba(176,141,87,0.08);
+    color: rgba(255, 0, 0, 0.08);
 
     pointer-events: none;
 }
