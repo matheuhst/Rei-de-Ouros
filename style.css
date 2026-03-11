@@ -94,22 +94,6 @@ body{
     );
 }
 
-body::before{
-
-content:"♦";
-
-position:fixed;
-
-font-size:300px;
-
-color:rgba(255,0,0,0.03);
-
-top:30%;
-left:60%;
-
-pointer-events:none;
-}
-
 body::after{
 
 content:"";
