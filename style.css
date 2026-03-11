@@ -1,4 +1,8 @@
 header {
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-direction: column; /* Coloca os textos um abaixo do outro */
+  align-items: center;    /* Centraliza horizontalmente */
+  text-align: center;     /* Garante que o texto interno também alinhe ao centro */
+  width: 100%;            /* Ocupa toda a largura da tela */
+  padding-top: 20px;      /* Um respiro para não colar na borda superior */
 }
