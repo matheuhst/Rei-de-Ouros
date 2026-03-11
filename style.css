@@ -1,3 +1,4 @@
+/*Espaço reservado para o cabeçalho do index.*/
 header{
     background-color:#0a0a0a;
     color:white;
@@ -44,4 +45,24 @@ header h3{
 
 body{
     margin: 0;
+}
+
+/*Espaço do parágrafo explicando as regras.*/
+
+/*Espaço body*/
+
+body{
+    margin:0;
+    font-family: serif;
+    color:white;
+
+    background:
+    radial-gradient(
+        circle at center,
+        #2a2a2a 0%,
+        #111 40%,
+        #000 80%
+    );
+
+    min-height:100vh;
 }
