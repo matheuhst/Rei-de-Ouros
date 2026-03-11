@@ -9,6 +9,8 @@ header{
     position:relative;
     margin-bottom: 5px;
     overflow: hidden;
+
+    border-bottom:1px solid rgba(200,160,60,0.4);
 }
 
 header::before,
@@ -64,6 +66,7 @@ body{
     );
 
     min-height:100vh;
+    letter-spacing:0.5px;
 }
 
 body{
