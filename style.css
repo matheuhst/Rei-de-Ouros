@@ -29,11 +29,11 @@ pointer-events:none;
 }
 
 header::before{
-left:40%;
+left:30%;
 }
 
 header::after{
-right:40%;
+right:30%;
 }
 
 header h1,
