@@ -1,47 +1,28 @@
-header {
+header{
+    background-color:#0a0a0a;
+    color:white;
 
-    background: linear-gradient(135deg,#fa003f,#ff4f7a);
+    text-align:center;
 
-    display: flex;
-    flex-direction: column;
-
-    align-items: center;
-    justify-content: center;
-
-    width: 100%;
-    padding: 20px;
-
-    gap: 10px; /* espaço entre os elementos */
-
+    padding:10px 0;
+    position:relative;
 }
 
-.div-header{
+header::before{
+    content:"♢";
+    position:absolute;
 
-    background: rgba(255,255,255,0.6);
-    backdrop-filter: blur(8px);
+    font-size:180px;
 
-    padding: 10px 25px;
-    border-radius: 10px;
+    color:rgba(176,141,87,0.08);
 
-    transition: transform 0.2s ease;
+    top:-40px;
+    left:50%;
+    transform:translateX(-50%);
 }
 
-.div-header:hover{
-    transform: scale(1.05);
-}
-
-body{
-    font-family: 'Poppins', sans-serif;
-}
-
-h1{
-    font-size: 38px;
-}
-
-h2{
-    font-size: 22px;
-}
-
-h3{
-    font-size: 16px;
+header h1,
+header h2,
+header h3{
+    margin:2px 0;
 }
