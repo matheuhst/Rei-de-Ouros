@@ -27,3 +27,7 @@ header h2,
 header h3{
     margin:2px 0;
 }
+
+body{
+    margin: 0;
+}
