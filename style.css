@@ -21,7 +21,7 @@ header::before{
     font-size: 8em;   /* escala com o header */
     line-height: 1;
 
-    color: rgba(176,141,87,0.12); /* mais visível mas ainda sutil */
+    color: rgba(255, 0, 0, 0.12); /* mais visível mas ainda sutil */
 
     pointer-events: none;
 }
