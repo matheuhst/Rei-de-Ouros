@@ -13,7 +13,7 @@ header{
 header::before,
 header::after{
 
-content:"K ♦";
+content:"♦";
 position:absolute;
 
 top:50%;
@@ -24,7 +24,7 @@ font-size:8em;
 color:rgba(255,0,0,0.12);
 
 pointer-events:none;
-filter: blur(2px);
+
 
 }
 
