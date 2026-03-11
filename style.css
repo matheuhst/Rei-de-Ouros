@@ -29,11 +29,11 @@ filter: blur(2px);
 }
 
 header::before{
-left:10%;
+left:40%;
 }
 
 header::after{
-right:10%;
+right:40%;
 }
 
 header h1,
