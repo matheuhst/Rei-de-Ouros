@@ -1,8 +1,47 @@
 header {
-  display: flex;
-  flex-direction: column; /* Coloca os textos um abaixo do outro */
-  align-items: center;    /* Centraliza horizontalmente */
-  text-align: center;     /* Garante que o texto interno também alinhe ao centro */
-  width: 100%;            /* Ocupa toda a largura da tela */
-  padding-top: 20px;      /* Um respiro para não colar na borda superior */
+
+    background: linear-gradient(135deg,#fa003f,#ff4f7a);
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    padding: 20px;
+
+    gap: 10px; /* espaço entre os elementos */
+
+}
+
+.div-header{
+
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(8px);
+
+    padding: 10px 25px;
+    border-radius: 10px;
+
+    transition: transform 0.2s ease;
+}
+
+.div-header:hover{
+    transform: scale(1.05);
+}
+
+body{
+    font-family: 'Poppins', sans-serif;
+}
+
+h1{
+    font-size: 38px;
+}
+
+h2{
+    font-size: 22px;
+}
+
+h3{
+    font-size: 16px;
 }
