@@ -6,6 +6,7 @@ header{
 
     padding:10px 0;
     position:relative;
+    margin: 0;
 }
 
 header::before{
@@ -14,7 +15,7 @@ header::before{
 
     font-size:180px;
 
-    color:rgba(176,141,87,0.08);
+    color:rgba(255, 0, 0, 0.08);
 
     top:-40px;
     left:50%;
