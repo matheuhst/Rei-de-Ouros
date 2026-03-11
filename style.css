@@ -53,16 +53,26 @@ body{
 
 body{
     margin:0;
-    font-family: serif;
     color:white;
+    font-family: serif;
 
     background:
-    radial-gradient(
-        circle at center,
-        #2a2a2a 0%,
-        #111 40%,
-        #000 80%
+    linear-gradient(
+        180deg,
+        #1b1b1b,
+        #101010
     );
 
     min-height:100vh;
+}
+
+body{
+    background:
+    repeating-linear-gradient(
+        90deg,
+        #141414 0px,
+        #141414 120px,
+        #1b1b1b 120px,
+        #1b1b1b 240px
+    );
 }
