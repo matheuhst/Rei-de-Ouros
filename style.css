@@ -6,16 +6,16 @@ header{
 
     padding:10px 0;
     position:relative;
-    margin: 0;
+    margin-bottom: 5px;
 }
 
 header::before{
-    content:"♢";
+    content:"♢       ♢";
     position:absolute;
 
     font-size:180px;
 
-    color:rgba(255, 0, 0, 0.08);
+    color:rgba(255, 0, 0, 0.06);
 
     top:-40px;
     left:50%;
