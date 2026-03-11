@@ -79,3 +79,55 @@ body{
         #1b1b1b 240px
     );
 }
+
+body{
+    margin:0;
+    color:white;
+
+    background:
+    repeating-linear-gradient(
+        90deg,
+        #0e0e0e,
+        #0e0e0e 200px,
+        #111 200px,
+        #111 400px
+    );
+}
+
+body::before{
+
+content:"♦";
+
+position:fixed;
+
+font-size:300px;
+
+color:rgba(255,0,0,0.03);
+
+top:30%;
+left:60%;
+
+pointer-events:none;
+}
+
+body::after{
+
+content:"";
+
+position:fixed;
+
+top:0;
+left:0;
+
+width:100%;
+height:100%;
+
+background:
+radial-gradient(
+circle,
+transparent 40%,
+rgba(0,0,0,0.6) 100%
+);
+
+pointer-events:none;
+}
