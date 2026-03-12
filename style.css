@@ -51,6 +51,12 @@ body{
 
 /*Espaço do parágrafo explicando as regras.*/
 
+.paragrafo-regras{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 /*Espaço body*/
 
 body{
