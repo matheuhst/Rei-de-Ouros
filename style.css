@@ -52,7 +52,7 @@ body{
 /*Espaço do parágrafo explicando as regras.*/
 
 .paragrafo-regras{
-    font-size: 30px;
+    font-size: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
