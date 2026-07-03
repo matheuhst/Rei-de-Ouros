@@ -153,7 +153,7 @@ function sanitizeName(value) {
 }
 
 function getFullName(player) {
-  return `${player.name} Mestre`;
+  return `Mestre ${player.name}`;
 }
 
 function startRound() {

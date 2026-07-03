@@ -1,24 +1,25 @@
 :root {
   --bg: #070000;
-  --bg-2: #160202;
-  --red-dark: #2b0202;
-  --red-panel: rgba(38, 5, 5, 0.88);
-  --red-panel-2: rgba(65, 8, 8, 0.82);
-  --red-line: rgba(255, 60, 60, 0.24);
-  --red-glow: rgba(255, 20, 20, 0.42);
+  --bg-2: #120101;
+
+  --red-dark: #210202;
+  --red-panel: rgba(32, 4, 4, 0.88);
+  --red-panel-2: rgba(48, 6, 6, 0.82);
+  --red-line: rgba(255, 60, 60, 0.16);
 
   --gold: #ffd84d;
-  --gold-2: #ffb300;
-  --gold-soft: rgba(255, 216, 77, 0.18);
+  --gold-2: #e0a900;
+  --gold-soft: rgba(255, 216, 77, 0.11);
 
   --white: #fff7ed;
-  --muted: #d9a7a7;
-  --muted-2: #9f6f6f;
+  --muted: #c99a9a;
+  --muted-2: #8e6666;
 
   --danger: #ff3b3b;
   --success: #a6ff63;
 
-  --shadow: 0 28px 100px rgba(0, 0, 0, 0.72);
+  --shadow: 0 22px 70px rgba(0, 0, 0, 0.58);
+
   --radius-xl: 30px;
   --radius-lg: 24px;
   --radius-md: 18px;
@@ -38,10 +39,10 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   color: var(--white);
   background:
-    radial-gradient(circle at 50% -15%, rgba(255, 35, 35, 0.46), transparent 36%),
-    radial-gradient(circle at 18% 22%, rgba(164, 0, 0, 0.56), transparent 34%),
-    radial-gradient(circle at 82% 74%, rgba(255, 216, 77, 0.12), transparent 32%),
-    linear-gradient(135deg, #040000, #140101 44%, #090000);
+    radial-gradient(circle at 50% -15%, rgba(180, 20, 20, 0.24), transparent 34%),
+    radial-gradient(circle at 18% 22%, rgba(120, 0, 0, 0.28), transparent 32%),
+    radial-gradient(circle at 82% 74%, rgba(255, 216, 77, 0.06), transparent 30%),
+    linear-gradient(135deg, #030000, #100101 46%, #070000);
   overflow-x: hidden;
 }
 
@@ -51,8 +52,8 @@ body::before {
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.014) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px);
   background-size: 46px 46px;
   mask-image: linear-gradient(to bottom, black, transparent 92%);
   z-index: -2;
@@ -64,8 +65,8 @@ body::after {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at center, transparent 42%, rgba(0, 0, 0, 0.72)),
-    linear-gradient(180deg, rgba(255, 0, 0, 0.08), transparent 40%, rgba(0, 0, 0, 0.34));
+    radial-gradient(circle at center, transparent 46%, rgba(0, 0, 0, 0.72)),
+    linear-gradient(180deg, rgba(255, 0, 0, 0.035), transparent 42%, rgba(0, 0, 0, 0.38));
   z-index: -1;
 }
 
@@ -73,12 +74,12 @@ body::after {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  opacity: 0.26;
+  opacity: 0.12;
   background-image:
     repeating-linear-gradient(
       0deg,
-      rgba(255, 255, 255, 0.035) 0,
-      rgba(255, 255, 255, 0.035) 1px,
+      rgba(255, 255, 255, 0.025) 0,
+      rgba(255, 255, 255, 0.025) 1px,
       transparent 1px,
       transparent 4px
     );
@@ -106,8 +107,8 @@ h1 {
   letter-spacing: -0.075em;
   text-transform: uppercase;
   text-shadow:
-    0 0 18px rgba(255, 20, 20, 0.52),
-    0 0 48px rgba(164, 0, 0, 0.62);
+    0 0 8px rgba(255, 20, 20, 0.24),
+    0 0 24px rgba(120, 0, 0, 0.32);
 }
 
 h2 {
@@ -150,10 +151,10 @@ p {
   text-align: right;
   border: 1px solid var(--red-line);
   background:
-    linear-gradient(145deg, rgba(80, 8, 8, 0.78), rgba(10, 0, 0, 0.78)),
-    rgba(0, 0, 0, 0.42);
+    linear-gradient(145deg, rgba(56, 6, 6, 0.72), rgba(8, 0, 0, 0.76)),
+    rgba(0, 0, 0, 0.36);
   box-shadow: var(--shadow);
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(14px);
 }
 
 .formula-box span {
@@ -167,7 +168,7 @@ p {
   display: block;
   color: var(--gold);
   font-size: 28px;
-  text-shadow: 0 0 24px rgba(255, 216, 77, 0.24);
+  text-shadow: 0 0 12px rgba(255, 216, 77, 0.16);
 }
 
 /* PAINÉIS */
@@ -179,10 +180,10 @@ p {
 .history-panel {
   border: 1px solid var(--red-line);
   background:
-    linear-gradient(145deg, rgba(58, 7, 7, 0.9), rgba(8, 0, 0, 0.9)),
-    rgba(0, 0, 0, 0.42);
+    linear-gradient(145deg, rgba(42, 5, 5, 0.88), rgba(8, 0, 0, 0.9)),
+    rgba(0, 0, 0, 0.38);
   box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(16px);
 }
 
 .panel {
@@ -217,9 +218,9 @@ select {
   min-height: 52px;
   padding: 14px 15px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 216, 77, 0.22);
+  border: 1px solid rgba(255, 216, 77, 0.16);
   background:
-    linear-gradient(145deg, rgba(8, 0, 0, 0.9), rgba(28, 3, 3, 0.88));
+    linear-gradient(145deg, rgba(8, 0, 0, 0.9), rgba(25, 3, 3, 0.86));
   color: var(--white);
   outline: none;
   font-size: 16px;
@@ -227,25 +228,25 @@ select {
 }
 
 input::placeholder {
-  color: rgba(255, 247, 237, 0.42);
+  color: rgba(255, 247, 237, 0.34);
 }
 
 input:focus,
 select:focus {
-  border-color: var(--gold);
+  border-color: rgba(255, 216, 77, 0.72);
   box-shadow:
-    0 0 0 4px var(--gold-soft),
-    0 0 30px rgba(255, 216, 77, 0.12);
+    0 0 0 3px rgba(255, 216, 77, 0.08),
+    0 0 14px rgba(255, 216, 77, 0.08);
 }
 
 .local-box {
   margin: 18px 0 24px;
   padding: 18px;
-  border: 1px solid rgba(255, 216, 77, 0.18);
+  border: 1px solid rgba(255, 216, 77, 0.13);
   border-radius: var(--radius-lg);
   background:
-    linear-gradient(135deg, rgba(255, 216, 77, 0.045), transparent),
-    rgba(0, 0, 0, 0.28);
+    linear-gradient(135deg, rgba(255, 216, 77, 0.025), transparent),
+    rgba(0, 0, 0, 0.24);
 }
 
 .local-box p {
@@ -277,7 +278,7 @@ select:focus {
 
 .btn:hover {
   transform: translateY(-1px);
-  filter: brightness(1.08);
+  filter: brightness(1.04);
 }
 
 .btn:active {
@@ -294,21 +295,21 @@ select:focus {
 .btn.primary {
   color: #260000;
   background:
-    linear-gradient(135deg, #fff0a3, var(--gold), #b86f00);
+    linear-gradient(135deg, #ffe982, var(--gold), #bd7a00);
   box-shadow:
-    0 12px 32px rgba(255, 216, 77, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.42);
+    0 8px 22px rgba(255, 216, 77, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 
 .btn.ghost {
   color: var(--muted);
-  background: rgba(0, 0, 0, 0.16);
-  border: 1px solid rgba(255, 216, 77, 0.18);
+  background: rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 216, 77, 0.14);
 }
 
 .btn.ghost:hover {
   color: var(--gold);
-  border-color: rgba(255, 216, 77, 0.4);
+  border-color: rgba(255, 216, 77, 0.28);
 }
 
 /* JOGO */
@@ -335,12 +336,12 @@ select:focus {
 .round-card {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 216, 77, 0.14);
+  border: 1px solid rgba(255, 216, 77, 0.11);
   border-radius: var(--radius-lg);
   padding: 18px;
   background:
-    radial-gradient(circle at top right, rgba(255, 216, 77, 0.08), transparent 48%),
-    rgba(0, 0, 0, 0.28);
+    radial-gradient(circle at top right, rgba(255, 216, 77, 0.04), transparent 48%),
+    rgba(0, 0, 0, 0.24);
 }
 
 .round-card::before {
@@ -348,9 +349,9 @@ select:focus {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.16), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.07), transparent);
   transform: translateX(-100%);
-  animation: scan 4s linear infinite;
+  animation: scan 5s linear infinite;
 }
 
 .round-card p {
@@ -366,7 +367,7 @@ select:focus {
   color: var(--gold);
   font-size: 30px;
   letter-spacing: -0.04em;
-  text-shadow: 0 0 24px rgba(255, 216, 77, 0.24);
+  text-shadow: 0 0 10px rgba(255, 216, 77, 0.12);
 }
 
 .arena-main {
@@ -379,10 +380,10 @@ select:focus {
   min-height: 100%;
   border-radius: var(--radius-lg);
   padding: 26px;
-  border: 1px solid rgba(255, 216, 77, 0.14);
+  border: 1px solid rgba(255, 216, 77, 0.11);
   background:
-    radial-gradient(circle at 20% 20%, rgba(255, 31, 31, 0.16), transparent 34%),
-    linear-gradient(145deg, rgba(0, 0, 0, 0.22), rgba(75, 5, 5, 0.22));
+    radial-gradient(circle at 20% 20%, rgba(180, 20, 20, 0.08), transparent 34%),
+    linear-gradient(145deg, rgba(0, 0, 0, 0.2), rgba(55, 5, 5, 0.18));
 }
 
 #currentPlayerName {
@@ -391,8 +392,8 @@ select:focus {
   font-size: clamp(34px, 5vw, 58px);
   line-height: 0.94;
   text-shadow:
-    0 0 20px rgba(255, 216, 77, 0.34),
-    0 0 46px rgba(255, 0, 0, 0.28);
+    0 0 10px rgba(255, 216, 77, 0.18),
+    0 0 22px rgba(255, 0, 0, 0.12);
 }
 
 #turnDescription {
@@ -441,11 +442,11 @@ select:focus {
   min-height: 210px;
   margin-top: 18px;
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 216, 77, 0.18);
+  border: 1px solid rgba(255, 216, 77, 0.13);
   background:
-    radial-gradient(circle at center, rgba(164, 0, 0, 0.36), transparent 62%),
-    linear-gradient(180deg, rgba(255, 216, 77, 0.04), transparent),
-    rgba(0, 0, 0, 0.42);
+    radial-gradient(circle at center, rgba(120, 0, 0, 0.18), transparent 62%),
+    linear-gradient(180deg, rgba(255, 216, 77, 0.025), transparent),
+    rgba(0, 0, 0, 0.38);
 }
 
 .calc-screen::before {
@@ -455,12 +456,12 @@ select:focus {
   background:
     repeating-linear-gradient(
       0deg,
-      rgba(255, 255, 255, 0.035) 0,
-      rgba(255, 255, 255, 0.035) 1px,
+      rgba(255, 255, 255, 0.02) 0,
+      rgba(255, 255, 255, 0.02) 1px,
       transparent 1px,
       transparent 7px
     );
-  opacity: 0.42;
+  opacity: 0.26;
   pointer-events: none;
 }
 
@@ -468,9 +469,9 @@ select:focus {
   content: "";
   position: absolute;
   width: 130%;
-  height: 80px;
-  background: linear-gradient(transparent, rgba(255, 0, 0, 0.16), transparent);
-  animation: verticalScan 2.4s linear infinite;
+  height: 70px;
+  background: linear-gradient(transparent, rgba(255, 0, 0, 0.07), transparent);
+  animation: verticalScan 3s linear infinite;
   pointer-events: none;
 }
 
@@ -498,12 +499,12 @@ select:focus {
   line-height: 0.9;
   letter-spacing: -0.08em;
   text-shadow:
-    0 0 28px rgba(255, 216, 77, 0.34),
-    0 0 60px rgba(255, 20, 20, 0.22);
+    0 0 14px rgba(255, 216, 77, 0.18),
+    0 0 30px rgba(255, 20, 20, 0.08);
 }
 
 .calc-face.back strong {
-  animation: pulseGold 0.85s ease infinite alternate;
+  animation: pulseGold 1s ease infinite alternate;
 }
 
 /* CARDS DOS JOGADORES */
@@ -522,11 +523,11 @@ select:focus {
   min-height: 140px;
   border-radius: var(--radius-lg);
   padding: 16px;
-  border: 1px solid rgba(255, 216, 77, 0.13);
+  border: 1px solid rgba(255, 216, 77, 0.1);
   background:
-    radial-gradient(circle at top right, rgba(255, 216, 77, 0.08), transparent 48%),
-    linear-gradient(160deg, rgba(255, 31, 31, 0.13), transparent),
-    rgba(0, 0, 0, 0.31);
+    radial-gradient(circle at top right, rgba(255, 216, 77, 0.035), transparent 48%),
+    linear-gradient(160deg, rgba(255, 31, 31, 0.06), transparent),
+    rgba(0, 0, 0, 0.28);
 }
 
 .player-card::before {
@@ -537,13 +538,13 @@ select:focus {
     conic-gradient(
       from 0deg,
       transparent,
-      rgba(255, 216, 77, 0.18),
+      rgba(255, 216, 77, 0.08),
       transparent,
-      rgba(255, 0, 0, 0.16),
+      rgba(255, 0, 0, 0.06),
       transparent
     );
   opacity: 0;
-  animation: rotateGlow 5s linear infinite;
+  animation: rotateGlow 7s linear infinite;
 }
 
 .player-card::after {
@@ -552,7 +553,7 @@ select:focus {
   inset: 1px;
   border-radius: calc(var(--radius-lg) - 1px);
   background:
-    linear-gradient(160deg, rgba(75, 4, 4, 0.84), rgba(0, 0, 0, 0.76));
+    linear-gradient(160deg, rgba(56, 4, 4, 0.82), rgba(0, 0, 0, 0.74));
   z-index: 0;
 }
 
@@ -562,10 +563,10 @@ select:focus {
 }
 
 .player-card.main-player {
-  border-color: rgba(255, 216, 77, 0.72);
+  border-color: rgba(255, 216, 77, 0.54);
   box-shadow:
-    0 0 0 1px rgba(255, 216, 77, 0.1),
-    0 0 32px rgba(255, 216, 77, 0.16);
+    0 0 0 1px rgba(255, 216, 77, 0.06),
+    0 0 16px rgba(255, 216, 77, 0.08);
 }
 
 .player-card.main-player::before,
@@ -574,7 +575,7 @@ select:focus {
 }
 
 .player-card.current {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .player-card.eliminated {
@@ -594,7 +595,7 @@ select:focus {
 .player-card.main-player .player-name,
 .main-name {
   color: var(--gold) !important;
-  text-shadow: 0 0 20px rgba(255, 216, 77, 0.25);
+  text-shadow: 0 0 10px rgba(255, 216, 77, 0.14);
 }
 
 .player-type {
@@ -617,7 +618,7 @@ select:focus {
 
 .points.danger {
   color: var(--danger);
-  text-shadow: 0 0 20px rgba(255, 59, 59, 0.32);
+  text-shadow: 0 0 10px rgba(255, 59, 59, 0.16);
 }
 
 .status-pill {
@@ -626,16 +627,16 @@ select:focus {
   border-radius: 999px;
   padding: 6px 10px;
   color: var(--gold);
-  background: rgba(255, 216, 77, 0.11);
-  border: 1px solid rgba(255, 216, 77, 0.12);
+  background: rgba(255, 216, 77, 0.08);
+  border: 1px solid rgba(255, 216, 77, 0.1);
   font-size: 12px;
   font-weight: 900;
 }
 
 .status-pill.dead {
   color: var(--danger);
-  background: rgba(255, 59, 59, 0.12);
-  border-color: rgba(255, 59, 59, 0.18);
+  background: rgba(255, 59, 59, 0.09);
+  border-color: rgba(255, 59, 59, 0.13);
 }
 
 /* RESULTADO */
@@ -659,7 +660,7 @@ select:focus {
   margin-bottom: 0;
   color: var(--gold);
   font-size: clamp(26px, 4vw, 42px);
-  text-shadow: 0 0 24px rgba(255, 216, 77, 0.22);
+  text-shadow: 0 0 12px rgba(255, 216, 77, 0.13);
 }
 
 .needed-number {
@@ -667,8 +668,8 @@ select:focus {
   text-align: right;
   padding: 14px 16px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 216, 77, 0.14);
-  background: rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(255, 216, 77, 0.11);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .needed-number span {
@@ -701,7 +702,7 @@ table {
 th,
 td {
   padding: 15px 13px;
-  border-bottom: 1px solid rgba(255, 216, 77, 0.11);
+  border-bottom: 1px solid rgba(255, 216, 77, 0.08);
   text-align: left;
 }
 
@@ -711,7 +712,7 @@ th {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 900;
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(0, 0, 0, 0.18);
 }
 
 td {
@@ -735,13 +736,13 @@ tr:last-child td {
 
 .badge.win {
   color: #210000;
-  background: linear-gradient(135deg, #fff0a3, var(--gold));
+  background: linear-gradient(135deg, #ffe982, var(--gold));
 }
 
 .badge.lose {
   color: var(--white);
-  background: rgba(255, 59, 59, 0.58);
-  border: 1px solid rgba(255, 59, 59, 0.35);
+  background: rgba(255, 59, 59, 0.42);
+  border: 1px solid rgba(255, 59, 59, 0.24);
 }
 
 /* HISTÓRICO */
@@ -754,10 +755,10 @@ tr:last-child td {
 .history-item {
   padding: 14px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 216, 77, 0.12);
+  border: 1px solid rgba(255, 216, 77, 0.09);
   background:
-    linear-gradient(135deg, rgba(255, 216, 77, 0.04), transparent),
-    rgba(0, 0, 0, 0.24);
+    linear-gradient(135deg, rgba(255, 216, 77, 0.025), transparent),
+    rgba(0, 0, 0, 0.22);
 }
 
 .history-item strong {
@@ -785,18 +786,18 @@ tr:last-child td {
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgba(0, 0, 0, 0.74);
-  backdrop-filter: blur(13px);
+  background: rgba(0, 0, 0, 0.76);
+  backdrop-filter: blur(10px);
 }
 
 .modal-box {
   width: min(560px, 100%);
   border-radius: var(--radius-xl);
   padding: 34px;
-  border: 1px solid rgba(255, 216, 77, 0.22);
+  border: 1px solid rgba(255, 216, 77, 0.16);
   background:
-    radial-gradient(circle at top, rgba(164, 0, 0, 0.48), transparent 60%),
-    linear-gradient(145deg, rgba(45, 5, 5, 0.96), rgba(8, 0, 0, 0.96));
+    radial-gradient(circle at top, rgba(120, 0, 0, 0.24), transparent 60%),
+    linear-gradient(145deg, rgba(38, 5, 5, 0.96), rgba(8, 0, 0, 0.96));
   box-shadow: var(--shadow);
   animation: modalIn 0.35s ease both;
 }
@@ -842,16 +843,16 @@ tr:last-child td {
 @keyframes pulseGold {
   from {
     text-shadow:
-      0 0 20px rgba(255, 216, 77, 0.2),
-      0 0 36px rgba(255, 0, 0, 0.1);
+      0 0 10px rgba(255, 216, 77, 0.12),
+      0 0 18px rgba(255, 0, 0, 0.06);
     transform: scale(1);
   }
 
   to {
     text-shadow:
-      0 0 42px rgba(255, 216, 77, 0.55),
-      0 0 78px rgba(255, 0, 0, 0.28);
-    transform: scale(1.035);
+      0 0 18px rgba(255, 216, 77, 0.24),
+      0 0 32px rgba(255, 0, 0, 0.1);
+    transform: scale(1.015);
   }
 }
 
