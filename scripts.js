@@ -470,11 +470,11 @@ function showRoundResult(result) {
 
   const winnerNames = result.winners.map(getFullName).join(", ");
 
-  $("#roundWinner").textContent = `Vencedor: ${winnerNames}`;
+  $("#roundWinner").textContent = `${winnerNames} venceu`;
   $("#finalRequiredNumber").textContent = result.requiredNumber.toFixed(2);
 
-  const tbody = $("#roundDetails");
-  tbody.innerHTML = "";
+  const container = $("#roundDetails");
+  container.innerHTML = "";
 
   const playersInRound = getPlayersFromResult(result);
 
@@ -483,24 +483,38 @@ function showRoundResult(result) {
     const distance = result.distances[player.id];
     const won = result.winnerIds.has(player.id);
 
-    const tr = document.createElement("tr");
+    const card = document.createElement("div");
+    card.className = "round-result-card";
 
-    tr.innerHTML = `
-      <td class="${player.main ? "main-name" : ""}">
+    if (player.main) {
+      card.classList.add("main-result");
+    }
+
+    if (won) {
+      card.classList.add("winner-result");
+    }
+
+    card.innerHTML = `
+      <div class="result-player-name ${player.main ? "main-name" : ""}">
         ${escapeHtml(getFullName(player))}
-      </td>
-      <td>${choice}</td>
-      <td>${distance.toFixed(2)}</td>
-      <td>
-        ${
-          won
-            ? `<span class="badge win">Venceu</span>`
-            : `<span class="badge lose">Perdeu 1 ponto</span>`
-        }
-      </td>
+      </div>
+
+      <div class="result-choice">
+        <span>Escolheu</span>
+        <strong>${choice}</strong>
+      </div>
+
+      <div class="result-distance">
+        <span>Distância</span>
+        <strong>${distance.toFixed(2)}</strong>
+      </div>
+
+      <div class="result-status ${won ? "win" : "lose"}">
+        ${won ? "Venceu" : "Perdeu 1 ponto"}
+      </div>
     `;
 
-    tbody.appendChild(tr);
+    container.appendChild(card);
   });
 
   $("#message").textContent =

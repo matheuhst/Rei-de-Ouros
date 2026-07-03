@@ -1,197 +1,181 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Concurso de Beleza</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Concurso de Beleza</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  <div class="red-noise"></div>
+    <div class="red-noise"></div>
 
-  <div class="app">
-    <header class="topbar">
-      <div>
-        <p class="eyebrow">Jogo de Ouros</p>
-        <h1>Concurso de Beleza</h1>
-      </div>
-
-      <div class="formula-box">
-        <span>Resultado necessário</span>
-        <strong>80% da média</strong>
-      </div>
-    </header>
-
-    <section id="setup" class="panel setup-panel">
-      <div class="setup-header">
-        <p class="eyebrow">Entrada</p>
-        <h2>Configurar participantes</h2>
-        <p>
-          A partida sempre terá 5 jogadores. Você pode jogar sozinho contra bots
-          ou ativar jogadores reais no mesmo computador.
-        </p>
-      </div>
-
-      <div class="setup-grid">
-        <label>
-          Modo de jogo
-          <select id="gameMode">
-            <option value="solo" selected>Sozinho contra bots</option>
-            <option value="local">Jogadores reais locais</option>
-          </select>
-        </label>
-
-        <label>
-          Seu nome
-          <input id="mainPlayerName" type="text" maxlength="18" placeholder="Ex: Evandro" />
-        </label>
-
-        <label>
-          Dificuldade dos bots
-          <select id="difficulty">
-            <option value="easy">Fácil</option>
-            <option value="normal" selected>Normal</option>
-            <option value="hard">Difícil</option>
-          </select>
-        </label>
-      </div>
-
-      <div id="localPlayersBox" class="local-box hidden">
-        <p>Digite o nome dos 5 jogadores reais:</p>
-
-        <div class="local-grid">
-          <input class="local-name" type="text" maxlength="18" placeholder="Jogador 1" />
-          <input class="local-name" type="text" maxlength="18" placeholder="Jogador 2" />
-          <input class="local-name" type="text" maxlength="18" placeholder="Jogador 3" />
-          <input class="local-name" type="text" maxlength="18" placeholder="Jogador 4" />
-          <input class="local-name" type="text" maxlength="18" placeholder="Jogador 5" />
-        </div>
-      </div>
-
-      <button id="startBtn" type="button" class="btn primary">Iniciar jogo</button>
-    </section>
-
-    <main id="game" class="game hidden">
-      <section class="arena">
-        <div class="arena-left">
-          <div class="round-card">
-            <p>Rodada</p>
-            <strong id="roundNumber">1</strong>
-          </div>
-
-          <div class="round-card">
-            <p>Jogadores ativos</p>
-            <strong id="activePlayers">5</strong>
-          </div>
-
-          <div class="round-card">
-            <p>Eliminação</p>
-            <strong>-10 pontos</strong>
-          </div>
-        </div>
-
-        <div class="arena-main">
-          <div class="turn-box">
-            <p class="eyebrow">Escolha atual</p>
-            <h2 id="currentPlayerName">-</h2>
-            <p id="turnDescription">
-              Escolha um número de 0 a 100.
-            </p>
-
-            <form id="guessForm" class="guess-form">
-              <input
-                id="playerNumber"
-                type="number"
-                min="0"
-                max="100"
-                step="1"
-                placeholder="0 a 100"
-                required
-              />
-
-              <button id="submitChoiceBtn" class="btn primary" type="submit">
-                Confirmar
-              </button>
-            </form>
-
-            <p id="message" class="message"></p>
-          </div>
-
-          <div id="calculationBox" class="calculation-box hidden">
-            <p class="eyebrow">Sistema</p>
-            <h2 id="calculationTitle">Calculando...</h2>
-
-            <div class="calc-screen">
-              <div id="calcFront" class="calc-face">
-                <span id="calcLine">Aguardando escolhas...</span>
-                <strong id="calcNumber">--</strong>
-              </div>
-
-              <div id="calcBack" class="calc-face back hidden">
-                <span>Número que precisava alcançar</span>
-                <strong id="requiredNumber">--</strong>
-              </div>
+    <div class="app">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">Jogo de Ouros</p>
+                <h1>Concurso de Beleza</h1>
             </div>
-          </div>
+
+            <div class="formula-box">
+                <span>Resultado necessário</span>
+                <strong>80% da média</strong>
+            </div>
+        </header>
+
+        <section id="setup" class="panel setup-panel">
+            <div class="setup-header">
+                <p class="eyebrow">Entrada</p>
+                <h2>Configurar participantes</h2>
+                <p>
+                    A partida sempre terá 5 jogadores. Você pode jogar sozinho contra bots
+                    ou ativar jogadores reais no mesmo computador.
+                </p>
+            </div>
+
+            <div class="setup-grid">
+                <label>
+                    Modo de jogo
+                    <select id="gameMode">
+                        <option value="solo" selected>Sozinho contra bots</option>
+                        <option value="local">Jogadores reais locais</option>
+                    </select>
+                </label>
+
+                <label>
+                    Seu nome
+                    <input id="mainPlayerName" type="text" maxlength="18" placeholder="Ex: Evandro" />
+                </label>
+
+                <label>
+                    Dificuldade dos bots
+                    <select id="difficulty">
+                        <option value="easy">Fácil</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="hard">Difícil</option>
+                    </select>
+                </label>
+            </div>
+
+            <div id="localPlayersBox" class="local-box hidden">
+                <p>Digite o nome dos 5 jogadores reais:</p>
+
+                <div class="local-grid">
+                    <input class="local-name" type="text" maxlength="18" placeholder="Jogador 1" />
+                    <input class="local-name" type="text" maxlength="18" placeholder="Jogador 2" />
+                    <input class="local-name" type="text" maxlength="18" placeholder="Jogador 3" />
+                    <input class="local-name" type="text" maxlength="18" placeholder="Jogador 4" />
+                    <input class="local-name" type="text" maxlength="18" placeholder="Jogador 5" />
+                </div>
+            </div>
+
+            <button id="startBtn" type="button" class="btn primary">Iniciar jogo</button>
+        </section>
+
+        <main id="game" class="game hidden">
+            <section class="arena">
+                <div class="arena-left">
+                    <div class="round-card">
+                        <p>Rodada</p>
+                        <strong id="roundNumber">1</strong>
+                    </div>
+
+                    <div class="round-card">
+                        <p>Jogadores ativos</p>
+                        <strong id="activePlayers">5</strong>
+                    </div>
+
+                    <div class="round-card">
+                        <p>Eliminação</p>
+                        <strong>-10 pontos</strong>
+                    </div>
+                </div>
+
+                <div class="arena-main">
+                    <div class="turn-box">
+                        <p class="eyebrow">Escolha atual</p>
+                        <h2 id="currentPlayerName">-</h2>
+                        <p id="turnDescription">
+                            Escolha um número de 0 a 100.
+                        </p>
+
+                        <form id="guessForm" class="guess-form">
+                            <input id="playerNumber" type="number" min="0" max="100" step="1" placeholder="0 a 100"
+                                required />
+
+                            <button id="submitChoiceBtn" class="btn primary" type="submit">
+                                Confirmar
+                            </button>
+                        </form>
+
+                        <p id="message" class="message"></p>
+                    </div>
+
+                    <div id="calculationBox" class="calculation-box hidden">
+                        <p class="eyebrow">Sistema</p>
+                        <h2 id="calculationTitle">Calculando...</h2>
+
+                        <div class="calc-screen">
+                            <div id="calcFront" class="calc-face">
+                                <span id="calcLine">Aguardando escolhas...</span>
+                                <strong id="calcNumber">--</strong>
+                            </div>
+
+                            <div id="calcBack" class="calc-face back hidden">
+                                <span>Número que precisava alcançar</span>
+                                <strong id="requiredNumber">--</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="players-strip" id="playersStrip"></section>
+
+            <section id="resultBox" class="result-box hidden">
+                <div class="result-header">
+                    <div>
+                        <p class="eyebrow">Resultado da rodada</p>
+                        <h2 id="roundWinner">-</h2>
+                    </div>
+
+                    <div class="needed-number">
+                        <span>Número que precisava alcançar</span>
+                        <strong id="finalRequiredNumber">--</strong>
+                    </div>
+                </div>
+
+                <div id="roundDetails" class="round-result-grid"></div>
+            </section>
+
+            <section class="history-panel">
+                <div class="section-title">
+                    <div>
+                        <p class="eyebrow">Memória</p>
+                        <h2>Histórico</h2>
+                    </div>
+
+                    <button id="resetBtn" type="button" class="btn ghost">Reiniciar</button>
+                </div>
+
+                <div id="historyList" class="history-list">
+                    <p class="empty">Nenhuma rodada jogada ainda.</p>
+                </div>
+            </section>
+        </main>
+
+        <div id="endModal" class="modal hidden">
+            <div class="modal-box">
+                <p class="eyebrow">Fim de jogo</p>
+                <h2 id="endTitle">Resultado</h2>
+                <p id="endText"></p>
+                <button id="playAgainBtn" type="button" class="btn primary">Jogar novamente</button>
+            </div>
         </div>
-      </section>
-
-      <section class="players-strip" id="playersStrip"></section>
-
-      <section id="resultBox" class="result-box hidden">
-        <div class="result-header">
-          <div>
-            <p class="eyebrow">Resultado da rodada</p>
-            <h2 id="roundWinner">-</h2>
-          </div>
-
-          <div class="needed-number">
-            <span>Número que precisava alcançar</span>
-            <strong id="finalRequiredNumber">--</strong>
-          </div>
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Jogador</th>
-                <th>Número escolhido</th>
-                <th>Distância</th>
-                <th>Resultado</th>
-              </tr>
-            </thead>
-            <tbody id="roundDetails"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="history-panel">
-        <div class="section-title">
-          <div>
-            <p class="eyebrow">Memória</p>
-            <h2>Histórico</h2>
-          </div>
-
-          <button id="resetBtn" type="button" class="btn ghost">Reiniciar</button>
-        </div>
-
-        <div id="historyList" class="history-list">
-          <p class="empty">Nenhuma rodada jogada ainda.</p>
-        </div>
-      </section>
-    </main>
-
-    <div id="endModal" class="modal hidden">
-      <div class="modal-box">
-        <p class="eyebrow">Fim de jogo</p>
-        <h2 id="endTitle">Resultado</h2>
-        <p id="endText"></p>
-        <button id="playAgainBtn" type="button" class="btn primary">Jogar novamente</button>
-      </div>
     </div>
-  </div>
 
-  <script src="scripts.js"></script>
+    <script src="scripts.js"></script>
 </body>
+
 </html>
