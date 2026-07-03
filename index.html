@@ -7,40 +7,47 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="background-glow"></div>
+  <div class="red-noise"></div>
 
   <div class="app">
-    <header class="hero">
+    <header class="topbar">
       <div>
-        <p class="eyebrow">Jogo psicológico de números</p>
+        <p class="eyebrow">Jogo de Ouros</p>
         <h1>Concurso de Beleza</h1>
-        <p class="subtitle">
-          Escolha um número de 0 a 100. O alvo será 80% da média de todos os jogadores.
-          Quem chegar mais perto vence a rodada.
-        </p>
+      </div>
+
+      <div class="formula-box">
+        <span>Resultado necessário</span>
+        <strong>80% da média</strong>
       </div>
     </header>
 
-    <section id="setup" class="card setup-card">
-      <h2>Configurar partida</h2>
+    <section id="setup" class="panel setup-panel">
+      <div class="setup-header">
+        <p class="eyebrow">Entrada</p>
+        <h2>Configurar participantes</h2>
+        <p>
+          A partida sempre terá 5 jogadores. Você pode jogar sozinho contra bots
+          ou ativar jogadores reais no mesmo computador.
+        </p>
+      </div>
 
-      <div class="form-grid">
+      <div class="setup-grid">
         <label>
-          Seu nome
-          <input id="playerName" type="text" placeholder="Ex: Matheus" maxlength="18" />
-        </label>
-
-        <label>
-          Quantidade de bots
-          <select id="botCount">
-            <option value="3">3 bots</option>
-            <option value="4" selected>4 bots</option>
-            <option value="5">5 bots</option>
+          Modo de jogo
+          <select id="gameMode">
+            <option value="solo" selected>Sozinho contra bots</option>
+            <option value="local">Jogadores reais locais</option>
           </select>
         </label>
 
         <label>
-          Dificuldade
+          Seu nome
+          <input id="mainPlayerName" type="text" maxlength="18" placeholder="Ex: Evandro" />
+        </label>
+
+        <label>
+          Dificuldade dos bots
           <select id="difficulty">
             <option value="easy">Fácil</option>
             <option value="normal" selected>Normal</option>
@@ -49,44 +56,99 @@
         </label>
       </div>
 
-      <button id="startBtn" class="btn primary">Iniciar jogo</button>
+      <div id="localPlayersBox" class="local-box hidden">
+        <p>Digite o nome dos 5 jogadores reais:</p>
+
+        <div class="local-grid">
+          <input class="local-name" type="text" maxlength="18" placeholder="Jogador 1" />
+          <input class="local-name" type="text" maxlength="18" placeholder="Jogador 2" />
+          <input class="local-name" type="text" maxlength="18" placeholder="Jogador 3" />
+          <input class="local-name" type="text" maxlength="18" placeholder="Jogador 4" />
+          <input class="local-name" type="text" maxlength="18" placeholder="Jogador 5" />
+        </div>
+      </div>
+
+      <button id="startBtn" type="button" class="btn primary">Iniciar jogo</button>
     </section>
 
     <main id="game" class="game hidden">
-      <section class="card status-card">
-        <div class="status-top">
-          <div>
-            <p class="label">Rodada</p>
+      <section class="arena">
+        <div class="arena-left">
+          <div class="round-card">
+            <p>Rodada</p>
             <strong id="roundNumber">1</strong>
           </div>
 
-          <div>
-            <p class="label">Alvo</p>
-            <strong>80% da média</strong>
+          <div class="round-card">
+            <p>Jogadores ativos</p>
+            <strong id="activePlayers">5</strong>
           </div>
 
-          <div>
-            <p class="label">Jogadores ativos</p>
-            <strong id="activePlayers">0</strong>
+          <div class="round-card">
+            <p>Eliminação</p>
+            <strong>-10 pontos</strong>
           </div>
         </div>
 
-        <form id="guessForm" class="guess-form">
-          <label>
-            Escolha seu número
-            <input id="playerNumber" type="number" min="0" max="100" step="1" placeholder="0 a 100" required />
-          </label>
+        <div class="arena-main">
+          <div class="turn-box">
+            <p class="eyebrow">Escolha atual</p>
+            <h2 id="currentPlayerName">-</h2>
+            <p id="turnDescription">
+              Escolha um número de 0 a 100.
+            </p>
 
-          <button class="btn primary" type="submit">Confirmar escolha</button>
-        </form>
+            <form id="guessForm" class="guess-form">
+              <input
+                id="playerNumber"
+                type="number"
+                min="0"
+                max="100"
+                step="1"
+                placeholder="0 a 100"
+                required
+              />
 
-        <p id="message" class="message"></p>
+              <button id="submitChoiceBtn" class="btn primary" type="submit">
+                Confirmar
+              </button>
+            </form>
+
+            <p id="message" class="message"></p>
+          </div>
+
+          <div id="calculationBox" class="calculation-box hidden">
+            <p class="eyebrow">Sistema</p>
+            <h2 id="calculationTitle">Calculando...</h2>
+
+            <div class="calc-screen">
+              <div id="calcFront" class="calc-face">
+                <span id="calcLine">Aguardando escolhas...</span>
+                <strong id="calcNumber">--</strong>
+              </div>
+
+              <div id="calcBack" class="calc-face back hidden">
+                <span>Número que precisava alcançar</span>
+                <strong id="requiredNumber">--</strong>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section class="card">
-        <div class="section-title">
-          <h2>Placar</h2>
-          <button id="resetBtn" class="btn ghost">Reiniciar</button>
+      <section class="players-strip" id="playersStrip"></section>
+
+      <section id="resultBox" class="result-box hidden">
+        <div class="result-header">
+          <div>
+            <p class="eyebrow">Resultado da rodada</p>
+            <h2 id="roundWinner">-</h2>
+          </div>
+
+          <div class="needed-number">
+            <span>Número que precisava alcançar</span>
+            <strong id="finalRequiredNumber">--</strong>
+          </div>
         </div>
 
         <div class="table-wrap">
@@ -94,43 +156,8 @@
             <thead>
               <tr>
                 <th>Jogador</th>
-                <th>Vidas</th>
-                <th>Vitórias</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="scoreboard"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section id="resultCard" class="card result-card hidden">
-        <h2>Resultado da rodada</h2>
-
-        <div class="result-grid">
-          <div>
-            <p class="label">Média</p>
-            <strong id="averageValue">-</strong>
-          </div>
-
-          <div>
-            <p class="label">Alvo</p>
-            <strong id="targetValue">-</strong>
-          </div>
-
-          <div>
-            <p class="label">Vencedor</p>
-            <strong id="winnerValue">-</strong>
-          </div>
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Jogador</th>
-                <th>Número</th>
-                <th>Distância do alvo</th>
+                <th>Número escolhido</th>
+                <th>Distância</th>
                 <th>Resultado</th>
               </tr>
             </thead>
@@ -139,21 +166,16 @@
         </div>
       </section>
 
-      <section class="card rules-card">
-        <h2>Regras</h2>
-        <ul>
-          <li>Todos escolhem um número entre 0 e 100.</li>
-          <li>O sistema calcula a média dos números escolhidos.</li>
-          <li>O alvo da rodada é 80% dessa média.</li>
-          <li>Quem ficar mais perto do alvo vence.</li>
-          <li>Quem perde a rodada perde 1 vida.</li>
-          <li>A partir da rodada 4, números repetidos são anulados e recebem penalidade extra.</li>
-          <li>O jogo termina quando restar apenas um jogador ou quando você for eliminado.</li>
-        </ul>
-      </section>
+      <section class="history-panel">
+        <div class="section-title">
+          <div>
+            <p class="eyebrow">Memória</p>
+            <h2>Histórico</h2>
+          </div>
 
-      <section class="card history-card">
-        <h2>Histórico</h2>
+          <button id="resetBtn" type="button" class="btn ghost">Reiniciar</button>
+        </div>
+
         <div id="historyList" class="history-list">
           <p class="empty">Nenhuma rodada jogada ainda.</p>
         </div>
@@ -165,7 +187,7 @@
         <p class="eyebrow">Fim de jogo</p>
         <h2 id="endTitle">Resultado</h2>
         <p id="endText"></p>
-        <button id="playAgainBtn" class="btn primary">Jogar novamente</button>
+        <button id="playAgainBtn" type="button" class="btn primary">Jogar novamente</button>
       </div>
     </div>
   </div>
