@@ -1,30 +1,175 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <title>Iniciação</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Concurso de Beleza</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <header>
+  <div class="background-glow"></div>
 
-    <h2>♢ Bem-vindos ao jogo ♢</h2>
-    <h1 style="color: rgb(210, 10, 46);"><b>Concurso de Beleza</b></h1>
-    <h3>Dificuldade: Rei de Ouros</h3>
-
-    </header>
-    <body>
-        <p class="paragrafo-regras">Cada jogador presente (5) deverá escolher um número de 0 a 100. <br>Para cada número escolhido 
-        será feito uma média sobre cada número e depois multiplicado por 0,8. <br>O jogador que escolher o número 
-        mais próximo do resultado ganha a rodada. <br>
-        Os restantes perderão 1 ponto dos 10 que são concebidos. Se um jogador chegar a 0, será adicionado uma regra nova. <br>
+  <div class="app">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Jogo psicológico de números</p>
+        <h1>Concurso de Beleza</h1>
+        <p class="subtitle">
+          Escolha um número de 0 a 100. O alvo será 80% da média de todos os jogadores.
+          Quem chegar mais perto vence a rodada.
         </p>
-    </body>
+      </div>
+    </header>
+
+    <section id="setup" class="card setup-card">
+      <h2>Configurar partida</h2>
+
+      <div class="form-grid">
+        <label>
+          Seu nome
+          <input id="playerName" type="text" placeholder="Ex: Evandro" maxlength="18" />
+        </label>
+
+        <label>
+          Quantidade de bots
+          <select id="botCount">
+            <option value="3">3 bots</option>
+            <option value="4" selected>4 bots</option>
+            <option value="5">5 bots</option>
+          </select>
+        </label>
+
+        <label>
+          Dificuldade
+          <select id="difficulty">
+            <option value="easy">Fácil</option>
+            <option value="normal" selected>Normal</option>
+            <option value="hard">Difícil</option>
+          </select>
+        </label>
+      </div>
+
+      <button id="startBtn" class="btn primary">Iniciar jogo</button>
+    </section>
+
+    <main id="game" class="game hidden">
+      <section class="card status-card">
+        <div class="status-top">
+          <div>
+            <p class="label">Rodada</p>
+            <strong id="roundNumber">1</strong>
+          </div>
+
+          <div>
+            <p class="label">Alvo</p>
+            <strong>80% da média</strong>
+          </div>
+
+          <div>
+            <p class="label">Jogadores ativos</p>
+            <strong id="activePlayers">0</strong>
+          </div>
+        </div>
+
+        <form id="guessForm" class="guess-form">
+          <label>
+            Escolha seu número
+            <input id="playerNumber" type="number" min="0" max="100" step="1" placeholder="0 a 100" required />
+          </label>
+
+          <button class="btn primary" type="submit">Confirmar escolha</button>
+        </form>
+
+        <p id="message" class="message"></p>
+      </section>
+
+      <section class="card">
+        <div class="section-title">
+          <h2>Placar</h2>
+          <button id="resetBtn" class="btn ghost">Reiniciar</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Jogador</th>
+                <th>Vidas</th>
+                <th>Vitórias</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="scoreboard"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="resultCard" class="card result-card hidden">
+        <h2>Resultado da rodada</h2>
+
+        <div class="result-grid">
+          <div>
+            <p class="label">Média</p>
+            <strong id="averageValue">-</strong>
+          </div>
+
+          <div>
+            <p class="label">Alvo</p>
+            <strong id="targetValue">-</strong>
+          </div>
+
+          <div>
+            <p class="label">Vencedor</p>
+            <strong id="winnerValue">-</strong>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Jogador</th>
+                <th>Número</th>
+                <th>Distância do alvo</th>
+                <th>Resultado</th>
+              </tr>
+            </thead>
+            <tbody id="roundDetails"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card rules-card">
+        <h2>Regras</h2>
+        <ul>
+          <li>Todos escolhem um número entre 0 e 100.</li>
+          <li>O sistema calcula a média dos números escolhidos.</li>
+          <li>O alvo da rodada é 80% dessa média.</li>
+          <li>Quem ficar mais perto do alvo vence.</li>
+          <li>Quem perde a rodada perde 1 vida.</li>
+          <li>A partir da rodada 4, números repetidos são anulados e recebem penalidade extra.</li>
+          <li>O jogo termina quando restar apenas um jogador ou quando você for eliminado.</li>
+        </ul>
+      </section>
+
+      <section class="card history-card">
+        <h2>Histórico</h2>
+        <div id="historyList" class="history-list">
+          <p class="empty">Nenhuma rodada jogada ainda.</p>
+        </div>
+      </section>
+    </main>
+
+    <div id="endModal" class="modal hidden">
+      <div class="modal-box">
+        <p class="eyebrow">Fim de jogo</p>
+        <h2 id="endTitle">Resultado</h2>
+        <p id="endText"></p>
+        <button id="playAgainBtn" class="btn primary">Jogar novamente</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
-
