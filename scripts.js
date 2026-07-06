@@ -29,32 +29,93 @@ const BOT_NAMES = [
 document.addEventListener("DOMContentLoaded", () => {
   const gameMode = $("#gameMode");
   const startBtn = $("#startBtn");
-  const guessForm = $("#guessForm");
-  const resetBtn = $("#resetBtn");
   const playAgainBtn = $("#playAgainBtn");
+  const playerNumberInput = $("#playerNumber");
+  const numberGrid = $("#numberGrid");
+  const nextRoundBtn = $("#nextRoundBtn");
+  const themeToggleBtn = $("#themeToggleBtn");
 
-  if (gameMode) {
-    gameMode.addEventListener("change", updateModeView);
-  }
+  if (gameMode) gameMode.addEventListener("change", updateModeView);
+  if (startBtn) startBtn.addEventListener("click", startGame);
+  if (playAgainBtn) playAgainBtn.addEventListener("click", resetGame);
+  if (nextRoundBtn) nextRoundBtn.addEventListener("click", goToNextRound);
+  if (numberGrid) numberGrid.addEventListener("click", handleNumberGridClick);
+  if (themeToggleBtn) themeToggleBtn.addEventListener("click", toggleTheme);
 
-  if (startBtn) {
-    startBtn.addEventListener("click", startGame);
-  }
-
-  if (guessForm) {
-    guessForm.addEventListener("submit", submitChoice);
-  }
-
-  if (resetBtn) {
-    resetBtn.addEventListener("click", resetGame);
-  }
-
-  if (playAgainBtn) {
-    playAgainBtn.addEventListener("click", resetGame);
-  }
-
+  applySavedTheme();
+  buildNumberGrid();
   updateModeView();
 });
+
+function applySavedTheme() {
+  const savedTheme = localStorage.getItem("concursoBelezaTheme") || "light";
+  const isDark = savedTheme === "dark";
+
+  document.body.classList.toggle("theme-dark", isDark);
+  updateThemeButton(isDark);
+}
+
+function toggleTheme() {
+  const isDark = !document.body.classList.contains("theme-dark");
+
+  document.body.classList.toggle("theme-dark", isDark);
+  localStorage.setItem("concursoBelezaTheme", isDark ? "dark" : "light");
+  updateThemeButton(isDark);
+}
+
+function updateThemeButton(isDark) {
+  const button = $("#themeToggleBtn");
+
+  if (!button) return;
+
+  button.textContent = isDark ? "Modo claro" : "Modo dark";
+  button.setAttribute("aria-pressed", String(isDark));
+}
+
+
+
+function buildNumberGrid() {
+  const grid = $("#numberGrid");
+  if (!grid) return;
+
+  grid.innerHTML = "";
+
+  for (let number = 0; number <= 100; number++) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "number-cell";
+    button.dataset.number = String(number);
+    button.textContent = String(number);
+
+    if (number === 100) button.classList.add("number-cell-100");
+
+    grid.appendChild(button);
+  }
+}
+
+function handleNumberGridClick(event) {
+  const button = event.target.closest(".number-cell");
+  if (!button || button.disabled) return;
+
+  submitNumberChoice(Number(button.dataset.number));
+}
+
+function setNumberGridDisabled(disabled) {
+  $$(".number-cell").forEach((button) => {
+    button.disabled = disabled;
+  });
+}
+
+
+function sanitizeNumberInput(event) {
+  const value = event.target.value;
+
+  if (value === "") return;
+
+  if (!/^\d+$/.test(value)) {
+    event.target.value = "";
+  }
+}
 
 function updateModeView() {
   const mode = $("#gameMode").value;
@@ -69,24 +130,27 @@ function updateModeView() {
 
 function startGame() {
   const mode = $("#gameMode").value;
-  const difficulty = $("#difficulty").value;
-
   state = {
     mode,
-    difficulty,
     round: 1,
     players: createPlayers(mode),
     choices: {},
     history: [],
     locked: false,
+    pendingNextRound: false,
+    rulesShown: {
+      duplicate: false,
+      exact: false,
+      finalDuel: false
+    },
     status: "playing"
   };
 
   $("#setup").classList.add("hidden");
   $("#game").classList.remove("hidden");
   $("#endModal").classList.add("hidden");
-  $("#resultBox").classList.add("hidden");
-  $("#calculationBox").classList.add("hidden");
+  $("#nextRoundBtn").classList.add("hidden");
+  updateActiveRulesPanel();
 
   startRound();
 }
@@ -97,22 +161,10 @@ function createPlayers(mode) {
     const botNames = getRandomBotNames(4);
 
     return [
-      {
-        id: "player-1",
-        name: mainName,
-        type: "human",
-        main: true,
-        points: 0,
-        eliminated: false
-      },
+      createPlayer("player-1", mainName, "human", true),
       ...botNames.map((name, index) => ({
-        id: `bot-${index + 1}`,
-        name,
-        type: "bot",
-        main: false,
-        points: 0,
-        eliminated: false,
-        strategy: getBotStrategy(index)
+        ...createPlayer(`bot-${index + 1}`, name, "bot", false),
+        strategy: getRandomBotStrategy(index)
       }))
     ];
   }
@@ -121,17 +173,19 @@ function createPlayers(mode) {
 
   return Array.from({ length: 5 }).map((_, index) => {
     const typedName = sanitizeName(localInputs[index]?.value);
-    const fallback = `Jogador ${index + 1}`;
-
-    return {
-      id: `player-${index + 1}`,
-      name: typedName || fallback,
-      type: "human",
-      main: index === 0,
-      points: 0,
-      eliminated: false
-    };
+    return createPlayer(`player-${index + 1}`, typedName || `Jogador ${index + 1}`, "human", index === 0);
   });
+}
+
+function createPlayer(id, name, type, main) {
+  return {
+    id,
+    name,
+    type,
+    main,
+    points: 0,
+    eliminated: false
+  };
 }
 
 function getRandomBotNames(quantity) {
@@ -139,9 +193,31 @@ function getRandomBotNames(quantity) {
   return shuffled.slice(0, quantity);
 }
 
-function getBotStrategy(index) {
-  const strategies = ["adaptive", "hunter", "low", "random"];
-  return strategies[index % strategies.length];
+function getRandomBotStrategy(index) {
+  const strategies = [
+    {
+      id: "chaotic",
+      min: 0,
+      max: 100
+    },
+    {
+      id: "balanced",
+      min: 35,
+      max: 45
+    },
+    {
+      id: "low",
+      min: 20,
+      max: 30
+    },
+    {
+      id: "precise",
+      min: 10,
+      max: 20
+    }
+  ];
+
+  return strategies[Math.floor(Math.random() * strategies.length)];
 }
 
 function sanitizeName(value) {
@@ -162,86 +238,74 @@ function startRound() {
   state.choices = {};
   state.locked = false;
 
-  $("#resultBox").classList.add("hidden");
-  $("#calculationBox").classList.add("hidden");
-  $("#playerNumber").disabled = false;
-  $("#submitChoiceBtn").disabled = false;
-  $("#playerNumber").value = "";
+  $("#arenaBoard").classList.add("hidden");
+  $("#choicePanel").classList.remove("hidden");
+  $("#nextRoundBtn").classList.add("hidden");
+  state.pendingNextRound = false;
+  updateActiveRulesPanel();
+  setMathLine("", "", true);
+
+  const input = $("#playerNumber");
+
+  input.value = "";
+  setNumberGridDisabled(false);
 
   const nextHuman = getNextHumanPlayer();
 
   if (nextHuman) {
     showPlayerTurn(nextHuman);
-  } else {
-    finishRound();
+    return;
   }
 
-  updateInterface();
+  finishRound();
 }
 
 function getNextHumanPlayer() {
   return state.players.find((player) => {
-    const isHuman = player.type === "human";
-    const isAlive = !player.eliminated;
-    const hasNotChosen = state.choices[player.id] === undefined;
-
-    return isHuman && isAlive && hasNotChosen;
+    return player.type === "human" && !player.eliminated && state.choices[player.id] === undefined;
   });
 }
 
 function showPlayerTurn(player) {
+  $("#roundMeta").textContent = `Rodada ${state.round}`;
   $("#currentPlayerName").textContent = getFullName(player);
 
   if (state.mode === "solo") {
-    $("#turnDescription").textContent =
-      "Sua vez. Escolha um número de 0 a 100. Depois, os outros Mestres farão suas escolhas.";
+    $("#turnDescription").textContent = "Digite um número de 0 a 100.";
   } else {
-    $("#turnDescription").textContent =
-      "Passe o computador para este jogador. Ele deve escolher um número de 0 a 100 sem mostrar aos outros.";
+    $("#turnDescription").textContent = "Digite um número sem mostrar aos outros jogadores.";
   }
 
-  $("#playerNumber").value = "";
-  $("#message").textContent = "Aguardando escolha...";
+  $("#message").textContent = "";
   $("#playerNumber").focus();
-
-  updateInterface();
 }
 
-async function submitChoice(event) {
-  event.preventDefault();
-
+async function submitNumberChoice(number) {
   if (!state || state.status !== "playing" || state.locked) return;
 
   const currentPlayer = getNextHumanPlayer();
-
   if (!currentPlayer) return;
 
-  const number = Number($("#playerNumber").value);
-
-  if (!Number.isFinite(number) || number < 0 || number > 100) {
-    $("#message").textContent = "Digite um número válido entre 0 e 100.";
+  if (!Number.isInteger(number) || number < 0 || number > 100) {
+    $("#message").textContent = "Escolha um número inteiro entre 0 e 100.";
     return;
   }
 
-  state.choices[currentPlayer.id] = Math.round(number);
-
-  $("#message").textContent = `Escolha de ${getFullName(currentPlayer)} registrada.`;
+  state.choices[currentPlayer.id] = number;
+  $("#playerNumber").value = String(number);
+  $("#message").textContent = `${getFullName(currentPlayer)} escolheu ${number}.`;
+  setNumberGridDisabled(true);
 
   const nextHuman = getNextHumanPlayer();
 
   if (nextHuman) {
-    $("#playerNumber").disabled = true;
-    $("#submitChoiceBtn").disabled = true;
-
-    await sleep(600);
-
-    $("#playerNumber").disabled = false;
-    $("#submitChoiceBtn").disabled = false;
-
+    await sleep(850);
+    setNumberGridDisabled(false);
     showPlayerTurn(nextHuman);
     return;
   }
 
+  await sleep(850);
   finishRound();
 }
 
@@ -250,40 +314,26 @@ async function finishRound() {
 
   state.locked = true;
 
-  $("#playerNumber").disabled = true;
-  $("#submitChoiceBtn").disabled = true;
-  $("#message").textContent = "Todos escolheram. O sistema vai calcular lentamente.";
+  setNumberGridDisabled(true);
+  $("#message").textContent = "";
 
   generateBotChoices();
 
   const result = calculateResult();
-
-  await animateCalculation(result);
-
-  applyPenalties(result);
+  await runRoundAnimation(result);
 
   state.history.push(result);
-
-  showRoundResult(result);
-  updateInterface();
 
   const ended = checkEndGame();
 
   if (!ended) {
-    state.round++;
-
-    await sleep(2300);
-
-    if (state && state.status === "playing") {
-      startRound();
-    }
+    state.pendingNextRound = true;
+    $("#nextRoundBtn").classList.remove("hidden");
   }
 }
 
 function generateBotChoices() {
-  const activeBots = state.players.filter((player) => {
-    return player.type === "bot" && !player.eliminated;
-  });
+  const activeBots = state.players.filter((player) => player.type === "bot" && !player.eliminated);
 
   activeBots.forEach((bot) => {
     state.choices[bot.id] = chooseBotNumber(bot);
@@ -291,150 +341,606 @@ function generateBotChoices() {
 }
 
 function chooseBotNumber(bot) {
-  const lastRound = state.history[state.history.length - 1];
+  const activeCount = getActivePlayers().length;
 
-  const difficultyNoise = {
-    easy: 24,
-    normal: 14,
-    hard: 7
-  };
+  if (activeCount <= 2) {
+    const finalDuelChoices = [
+      () => 0,
+      () => 100,
+      () => 1
+    ];
 
-  const noise = difficultyNoise[state.difficulty] || 14;
-
-  let number;
-
-  if (!lastRound) {
-    number = 40 + randomBetween(-15, 15);
-  } else {
-    const previousRequired = lastRound.requiredNumber;
-    const mainPlayerPreviousChoice =
-      lastRound.choices["player-1"] !== undefined
-        ? lastRound.choices["player-1"]
-        : previousRequired;
-
-    switch (bot.strategy) {
-      case "adaptive":
-        number = previousRequired + randomBetween(-noise, noise);
-        break;
-
-      case "hunter":
-        number = previousRequired * 0.9 + randomBetween(-noise / 2, noise / 2);
-        break;
-
-      case "low":
-        number = previousRequired * 0.72 + randomBetween(-noise, noise);
-        break;
-
-      case "random":
-        number = randomBetween(0, 100);
-        break;
-
-      default:
-        number = previousRequired + randomBetween(-noise, noise);
-        break;
-    }
-
-    if (state.difficulty === "hard") {
-      number = number * 0.82 + mainPlayerPreviousChoice * 0.18;
-    }
+    return finalDuelChoices[Math.floor(Math.random() * finalDuelChoices.length)]();
   }
 
-  return clamp(Math.round(number), 0, 100);
+  const strategy = bot.strategy || getRandomBotStrategy();
+
+  return randomInteger(strategy.min, strategy.max);
+}
+
+
+function randomInteger(min, max) {
+  const roundedMin = Math.ceil(min);
+  const roundedMax = Math.floor(max);
+
+  return Math.floor(Math.random() * (roundedMax - roundedMin + 1)) + roundedMin;
 }
 
 function calculateResult() {
   const activePlayers = getActivePlayers();
-
-  const numbers = activePlayers.map((player) => state.choices[player.id]);
-
-  const average =
-    numbers.reduce((total, current) => total + current, 0) / numbers.length;
-
+  const rules = getActiveRules(activePlayers.length);
+  const choices = { ...state.choices };
+  const numbers = activePlayers.map((player) => choices[player.id]);
+  const total = numbers.reduce((sum, number) => sum + number, 0);
+  const average = total / numbers.length;
   const requiredNumber = average * 0.8;
 
   const distances = {};
 
   activePlayers.forEach((player) => {
-    distances[player.id] = Math.abs(state.choices[player.id] - requiredNumber);
+    distances[player.id] = Math.abs(choices[player.id] - requiredNumber);
   });
 
-  const smallestDistance = Math.min(
-    ...activePlayers.map((player) => distances[player.id])
-  );
+  const duplicateNumbers = getDuplicateNumbers(activePlayers, choices);
+  const invalidDuplicateIds = new Set();
 
-  const winners = activePlayers.filter((player) => {
-    return Math.abs(distances[player.id] - smallestDistance) < 0.0001;
-  });
+  if (rules.duplicate) {
+    activePlayers.forEach((player) => {
+      if (duplicateNumbers.has(choices[player.id])) {
+        invalidDuplicateIds.add(player.id);
+      }
+    });
+  }
+
+  const specialDuel = getFinalDuelResult(activePlayers, choices, rules);
+  let winners = [];
+  let exactWinnerIds = new Set();
+  let exactRuleTriggered = false;
+  let finalDuelTriggered = false;
+
+  if (specialDuel.triggered) {
+    winners = specialDuel.winners;
+    finalDuelTriggered = true;
+    invalidDuplicateIds.clear();
+  } else {
+    const validPlayers = activePlayers.filter((player) => !invalidDuplicateIds.has(player.id));
+
+    if (rules.exact) {
+      const exactPlayers = validPlayers.filter((player) => {
+        return Math.abs(choices[player.id] - requiredNumber) < 0.0001;
+      });
+
+      if (exactPlayers.length > 0) {
+        winners = exactPlayers;
+        exactWinnerIds = new Set(exactPlayers.map((player) => player.id));
+        exactRuleTriggered = true;
+      }
+    }
+
+    if (!winners.length && validPlayers.length) {
+      const smallestDistance = Math.min(...validPlayers.map((player) => distances[player.id]));
+
+      winners = validPlayers.filter((player) => {
+        return Math.abs(distances[player.id] - smallestDistance) < 0.0001;
+      });
+    }
+  }
 
   const winnerIds = new Set(winners.map((player) => player.id));
+  const multiplier = exactRuleTriggered ? 2 : 1;
 
-  const penalties = activePlayers.map((player) => ({
-    playerId: player.id,
-    pointsLost: winnerIds.has(player.id) ? 0 : 1
-  }));
+  const penalties = activePlayers.map((player) => {
+    let pointsLost = 0;
+    let reason = "";
+
+    if (!winnerIds.has(player.id)) {
+      if (invalidDuplicateIds.has(player.id)) {
+        pointsLost = 2 * multiplier;
+        reason = exactRuleTriggered ? "Número repetido inválido com penalidade dobrada" : "Número repetido inválido";
+      } else {
+        pointsLost = 1 * multiplier;
+        reason = exactRuleTriggered ? "Penalidade dobrada por acerto exato" : "Perdeu a rodada";
+      }
+    }
+
+    return {
+      playerId: player.id,
+      pointsLost,
+      reason
+    };
+  });
 
   return {
     round: state.round,
-    choices: { ...state.choices },
+    choices,
+    total,
     average,
     requiredNumber,
     distances,
     winners,
     winnerIds,
-    penalties
+    penalties,
+    rules,
+    duplicateNumbers,
+    invalidDuplicateIds,
+    exactWinnerIds,
+    exactRuleTriggered,
+    finalDuelTriggered,
+    finalDuelReason: specialDuel.reason || ""
   };
 }
 
-async function animateCalculation(result) {
-  const calculationBox = $("#calculationBox");
-  const calcFront = $("#calcFront");
-  const calcBack = $("#calcBack");
+function getActiveRules(activePlayerCount) {
+  return {
+    duplicate: activePlayerCount <= 4,
+    exact: activePlayerCount <= 3,
+    finalDuel: activePlayerCount === 2
+  };
+}
 
-  calculationBox.classList.remove("hidden");
-  calcFront.classList.remove("hidden");
-  calcBack.classList.add("hidden");
+function getDuplicateNumbers(players, choices) {
+  const countByNumber = new Map();
 
-  $("#calculationTitle").textContent = "Iniciando cálculo";
-  $("#calcLine").textContent = "Todas as escolhas foram registradas";
-  $("#calcNumber").textContent = "--";
+  players.forEach((player) => {
+    const choice = choices[player.id];
+    countByNumber.set(choice, (countByNumber.get(choice) || 0) + 1);
+  });
 
-  await sleep(900);
+  const duplicateNumbers = new Set();
 
-  const playersInRound = getPlayersFromResult(result);
+  countByNumber.forEach((count, number) => {
+    if (count >= 2) duplicateNumbers.add(number);
+  });
 
-  for (const player of playersInRound) {
-    $("#calculationTitle").textContent = "Revelando escolhas";
-    $("#calcLine").textContent = getFullName(player);
-    $("#calcNumber").textContent = result.choices[player.id];
+  return duplicateNumbers;
+}
 
-    await sleep(700);
+function getFinalDuelResult(players, choices, rules) {
+  if (!rules.finalDuel || players.length !== 2) {
+    return { triggered: false, winners: [], reason: "" };
   }
 
-  $("#calculationTitle").textContent = "Calculando";
-  $("#calcLine").textContent = "Média dos números escolhidos";
+  const zeroPlayers = players.filter((player) => choices[player.id] === 0);
+  const hundredPlayers = players.filter((player) => choices[player.id] === 100);
 
-  await animateNumber("#calcNumber", result.average, 1500);
+  if (zeroPlayers.length > 0 && hundredPlayers.length > 0) {
+    return {
+      triggered: true,
+      winners: hundredPlayers,
+      reason: "0 contra 100: quem escolheu 100 vence."
+    };
+  }
 
-  await sleep(800);
+  if (zeroPlayers.length === 1) {
+    return {
+      triggered: true,
+      winners: zeroPlayers,
+      reason: "0 contra qualquer número diferente de 100: quem escolheu 0 vence."
+    };
+  }
 
-  $("#calculationTitle").textContent = "Aplicando regra dos 80%";
-  $("#calcLine").textContent = "Convertendo a média no número final";
+  return { triggered: false, winners: [], reason: "" };
+}
 
-  await animateNumber("#calcNumber", result.requiredNumber, 1600);
+function getNewRuleMessages(rules) {
+  const messages = [];
 
+  if (rules.duplicate && !state.rulesShown.duplicate) {
+    messages.push({
+      key: "duplicate",
+      title: "Números repetidos são inválidos",
+      description: "Se duas ou mais pessoas escolherem o mesmo número, esse número não conta. Cada jogador repetido perde 2 pontos."
+    });
+  }
+
+  if (rules.exact && !state.rulesShown.exact) {
+    messages.push({
+      key: "exact",
+      title: "Acerto exato dobra a penalidade",
+      description: "Se alguém acertar exatamente o alvo, todos os outros têm a penalidade dobrada. Repetidos passam de -2 para -4."
+    });
+  }
+
+  if (rules.finalDuel && !state.rulesShown.finalDuel) {
+    messages.push({
+      key: "finalDuel",
+      title: "Duelo final",
+      description: "Com 2 jogadores, o 0 decide: 0 perde para 100, mas vence qualquer outro número. O bot final escolhe entre 0, 1 ou 100."
+    });
+  }
+
+  return messages;
+}
+
+
+async function runRoundAnimation(result) {
+  const players = getPlayersFromResult(result);
+  const numbers = players.map((player) => result.choices[player.id]);
+
+  $("#choicePanel").classList.add("hidden");
+  $("#arenaBoard").classList.remove("hidden");
+  $("#nextRoundBtn").classList.add("hidden");
+  updateActiveRulesPanel();
+
+  const newRules = getNewRuleMessages(result.rules);
+
+  setPhase("♦ Sistema", `Rodada ${result.round}`, "Os números serão revelados um por um.");
+  renderPlayersBoard(result, { showChoices: false, markWinners: false });
   await sleep(650);
 
-  calcFront.classList.add("hidden");
-  calcBack.classList.remove("hidden");
+  for (const rule of newRules) {
+    setPhase("Nova regra", rule.title, rule.description);
+    state.rulesShown[rule.key] = true;
+    updateActiveRulesPanel();
+    setMathLine("Regra adicionada", "!", false);
+    await sleep(2600);
+    setMathLine("", "", true);
+  }
 
-  $("#requiredNumber").textContent = result.requiredNumber.toFixed(2);
+  for (const player of players) {
+    revealChoice(player, result.choices[player.id]);
+    setPhase("♦ Escolhas", `${getFullName(player)} escolheu ${result.choices[player.id]}`, "");
+    await sleep(850);
+  }
 
-  await sleep(1400);
+  if (result.finalDuelTriggered) {
+    setPhase("Duelo final", "Regra decisiva", result.finalDuelReason || "A regra final decidiu a rodada.");
+    setMathLine("Regra do duelo final", result.winners.some((player) => result.choices[player.id] === 100) ? "100 vence" : "0 vence", false);
+    await sleep(1600);
+
+    renderPlayersBoard(result, { showChoices: true, markWinners: true, showInvalid: true });
+    const winnersText = result.winners.map(getFullName).join(", ");
+    setPhase("♦ Resultado", `${winnersText} venceu`, result.finalDuelReason || "A regra final decidiu a rodada.");
+    await sleep(900);
+
+    await animatePenalties(result);
+
+    const activeAfter = getActivePlayers().length;
+    updateActiveRulesPanel();
+    setPhase("Pontuação", "Rodada concluída", `Analise os números antes de avançar. ${activeAfter} jogador${activeAfter === 1 ? "" : "es"} ainda ativo${activeAfter === 1 ? "" : "s"}.`);
+    return;
+  }
+
+  setPhase("♦ Cálculo", "Somando as escolhas", "Cada número revelado entra na soma da rodada.");
+  setMathLine("", "", false);
+
+  let runningTotal = 0;
+  const expressionParts = [];
+
+  for (const player of players) {
+    const number = result.choices[player.id];
+    runningTotal += number;
+    expressionParts.push(number);
+    highlightCard(player.id, "summing");
+    setMathLine(expressionParts.join(" + "), String(runningTotal), false);
+    await sleep(650);
+  }
+
+  clearCardClass("summing");
+  await sleep(450);
+
+  await moveMathResultIntoNextFormula(`${result.total} ÷ ${numbers.length}`);
+
+  setPhase("Média", "Dividindo pelo número de jogadores", "A soma vira a base da média.");
+  setMathLine(`${result.total} ÷ ${numbers.length}`, "0.00", false);
+  await animateNumber("#mathResult", result.average, 1200);
+  await sleep(650);
+
+  setPhase("Regra", "Aplicando 80% da média", "Os números somem por um instante. Agora vale apenas a média.");
+  renderPlayersBoard(result, { showChoices: false, markWinners: false });
+
+  await moveMathResultIntoNextFormula(`${result.average.toFixed(2)} × 0,8`);
+
+  setMathLine(`${result.average.toFixed(2)} × 0,8`, "0.00", false);
+  await animateNumber("#mathResult", result.requiredNumber, 1300);
+  await sleep(700);
+
+  if (result.invalidDuplicateIds.size > 0) {
+    const repeatedText = [...result.duplicateNumbers].join(", ");
+    setPhase("Regra ativa", "Número repetido inválido", `Número${result.duplicateNumbers.size === 1 ? "" : "s"} repetido${result.duplicateNumbers.size === 1 ? "" : "s"}: ${repeatedText}. Esses jogadores não podem vencer esta rodada.`);
+    renderPlayersBoard(result, { showChoices: true, markWinners: false, showInvalid: true });
+    setMathLine("Número inválido", repeatedText, false);
+    await sleep(2200);
+  }
+
+  if (result.exactRuleTriggered) {
+    const exactText = result.winners.map(getFullName).join(", ");
+    setPhase("Regra ativa", "Alvo exato atingido", `${exactText} acertou exatamente. A penalidade dos outros jogadores será dobrada.`);
+    setMathLine("Acerto exato", result.requiredNumber.toFixed(2), false);
+    await sleep(2200);
+  }
+
+  setPhase("Comparação", `Alvo: ${result.requiredNumber.toFixed(2)}`, "Os números voltam para você analisar quem ficou mais perto.");
+  renderPlayersBoard(result, { showChoices: true, markWinners: false, showInvalid: true });
+  setMathLine("Alvo da rodada", result.requiredNumber.toFixed(2), false);
+  await sleep(900);
+
+  for (const player of players) {
+    highlightCard(player.id, "comparing");
+    const invalid = result.invalidDuplicateIds.has(player.id);
+    const description = invalid
+      ? `${getFullName(player)} escolheu ${result.choices[player.id]}, mas esse número ficou inválido.`
+      : `${getFullName(player)} escolheu ${result.choices[player.id]}.`;
+
+    setPhase("Comparação", `Alvo: ${result.requiredNumber.toFixed(2)}`, description);
+    await sleep(620);
+  }
+
+  clearCardClass("comparing");
+  renderPlayersBoard(result, { showChoices: true, markWinners: true, showInvalid: true });
+
+  const winnersText = result.winners.length ? result.winners.map(getFullName).join(", ") : "Ninguém";
+  const resultText = result.winners.length ? `${winnersText} venceu` : "Nenhum número válido venceu";
+  const penaltyText = result.exactRuleTriggered
+    ? "A penalidade foi dobrada pela regra do acerto exato."
+    : "Os outros jogadores perdem pontos conforme as regras ativas.";
+
+  setPhase("♦ Resultado", resultText, penaltyText);
+  setMathLine("Alvo final", result.requiredNumber.toFixed(2), false);
+  await sleep(850);
+
+  await animatePenalties(result);
+
+  const activeAfter = getActivePlayers().length;
+  updateActiveRulesPanel();
+  setPhase("Pontuação", "Rodada concluída", `Analise os números antes de avançar. ${activeAfter} jogador${activeAfter === 1 ? "" : "es"} ainda ativo${activeAfter === 1 ? "" : "s"}.`);
+}
+
+
+function renderPlayersBoard(result, options = {}) {
+  const {
+    showChoices = false,
+    markWinners = false,
+    showInvalid = false
+  } = options;
+
+  const board = $("#playersBoard");
+  const players = getPlayersFromResult(result);
+
+  board.innerHTML = "";
+
+  players.forEach((player) => {
+    const choice = result.choices[player.id];
+    const won = result.winnerIds.has(player.id);
+    const invalid = showInvalid && result.invalidDuplicateIds && result.invalidDuplicateIds.has(player.id);
+    const penalty = result.penalties.find((item) => item.playerId === player.id);
+
+    const card = document.createElement("article");
+    card.className = "player-card";
+    card.dataset.playerId = player.id;
+
+    if (player.main) card.classList.add("main-player");
+    if (player.eliminated) card.classList.add("eliminated");
+    if (invalid) card.classList.add("invalid-choice");
+
+    if (markWinners) {
+      card.classList.add(won ? "winner" : "loser");
+    }
+
+    let statusText = player.eliminated ? "Eliminado" : "Ativo";
+    let statusClass = player.eliminated ? "dead" : "";
+
+    if (markWinners) {
+      if (won) {
+        statusText = "Venceu";
+        statusClass = "win";
+      } else if (invalid) {
+        statusText = penalty?.pointsLost ? `Inválido -${penalty.pointsLost}` : "Inválido";
+        statusClass = "invalid";
+      } else if (penalty?.pointsLost) {
+        statusText = `Perdeu -${penalty.pointsLost}`;
+        statusClass = "lose";
+      }
+    } else if (invalid) {
+      statusText = "Inválido";
+      statusClass = "invalid";
+    }
+
+    card.innerHTML = `
+      <div class="player-card-name">${escapeHtml(getFullName(player))}</div>
+      <span class="player-kind">${player.type === "bot" ? "Bot" : "Jogador"}</span>
+
+      <div class="choice-row">
+        <span>Número</span>
+        <strong class="choice-value ${showChoices ? "big-choice" : ""}">${showChoices ? choice : "—"}</strong>
+      </div>
+
+      <div class="score-row">
+        <span>Pontos</span>
+        <strong class="score-value">${player.points}</strong>
+      </div>
+
+      <div class="status-pill ${statusClass}">${statusText}</div>
+    `;
+
+    board.appendChild(card);
+  });
+}
+
+
+function revealChoice(player, number) {
+  const card = getPlayerCard(player.id);
+  if (!card) return;
+
+  const value = card.querySelector(".choice-value");
+  if (value) {
+    value.textContent = number;
+    value.classList.add("big-choice");
+  }
+
+  card.classList.add("revealed");
+  card.style.animation = "pop .34s ease both";
+
+  window.setTimeout(() => {
+    card.style.animation = "";
+  }, 360);
+}
+
+async function animatePenalties(result) {
+  for (const penalty of result.penalties) {
+    const player = state.players.find((item) => item.id === penalty.playerId);
+    if (!player || penalty.pointsLost <= 0) continue;
+
+    const card = getPlayerCard(player.id);
+    if (!card) continue;
+
+    const fly = document.createElement("div");
+    fly.className = "penalty-fly";
+    fly.textContent = `-${penalty.pointsLost}`;
+    card.appendChild(fly);
+
+    await sleep(420);
+
+    player.points -= penalty.pointsLost;
+
+    if (player.points <= -10) {
+      player.points = -10;
+      player.eliminated = true;
+    }
+
+    const score = card.querySelector(".score-value");
+    if (score) {
+      score.textContent = player.points;
+      score.classList.remove("score-hit");
+      void score.offsetWidth;
+      score.classList.add("score-hit");
+    }
+
+    const pill = card.querySelector(".status-pill");
+    if (pill && player.eliminated) {
+      pill.textContent = "Eliminado";
+      pill.className = "status-pill dead";
+      card.classList.add("eliminated");
+    }
+
+    await sleep(520);
+  }
+}
+
+async function moveMathResultIntoNextFormula(nextExpression) {
+  const resultElement = $("#mathResult");
+  const expressionElement = $("#mathExpression");
+  const mathLine = $("#mathLine");
+
+  if (!resultElement || !expressionElement || !mathLine || mathLine.classList.contains("hidden")) return;
+
+  const value = resultElement.textContent.trim();
+  if (!value) return;
+
+  mathLine.classList.add("math-converting");
+
+  resultElement.classList.remove("math-result-convert");
+  void resultElement.offsetWidth;
+  resultElement.classList.add("math-result-convert");
+
+  await sleep(360);
+
+  resultElement.textContent = "";
+  expressionElement.textContent = nextExpression;
+
+  expressionElement.classList.remove("formula-enter");
+  void expressionElement.offsetWidth;
+  expressionElement.classList.add("formula-enter");
+
+  await sleep(420);
+
+  resultElement.classList.remove("math-result-convert");
+  expressionElement.classList.remove("formula-enter");
+  mathLine.classList.remove("math-converting");
+
+  mathLine.classList.remove("math-line-pulse");
+  void mathLine.offsetWidth;
+  mathLine.classList.add("math-line-pulse");
+
+  await sleep(180);
+}
+
+
+function updateActiveRulesPanel() {
+  const panel = $("#activeRulesPanel");
+  const list = $("#activeRulesList");
+
+  if (!panel || !list || !state) {
+    if (panel) panel.classList.add("hidden");
+    return;
+  }
+
+  const rules = getActiveRules(getActivePlayers().length);
+  const activeRules = [];
+
+  if (rules.duplicate) {
+    activeRules.push({
+      title: "Números repetidos são inválidos",
+      text: "Se duas ou mais pessoas escolherem o mesmo número, esse número não conta e cada uma perde 2 pontos."
+    });
+  }
+
+  if (rules.exact) {
+    activeRules.push({
+      title: "Acerto exato dobra a penalidade",
+      text: "Se alguém acertar exatamente o alvo, todos os outros têm a penalidade dobrada. Repetidos vão de -2 para -4."
+    });
+  }
+
+  if (rules.finalDuel) {
+    activeRules.push({
+      title: "Duelo final",
+      text: "Com 2 jogadores, o 0 decide: 0 perde para 100, mas vence qualquer outro número. O bot final escolhe entre 0, 1 ou 100."
+    });
+  }
+
+  if (!activeRules.length) {
+    panel.classList.add("hidden");
+    list.innerHTML = "";
+    return;
+  }
+
+  panel.classList.remove("hidden");
+  list.innerHTML = activeRules.map((rule) => `
+    <article class="active-rule-card">
+      <strong>${escapeHtml(rule.title)}</strong>
+      <span>${escapeHtml(rule.text)}</span>
+    </article>
+  `).join("");
+}
+
+
+function setPhase(label, title, description) {
+  $("#phaseLabel").textContent = label;
+  $("#phaseTitle").textContent = title;
+  $("#phaseDescription").textContent = description;
+}
+
+function setMathLine(expression, result, hide) {
+  const mathLine = $("#mathLine");
+
+  if (hide) {
+    mathLine.classList.add("hidden");
+  } else {
+    mathLine.classList.remove("hidden");
+  }
+
+  $("#mathExpression").textContent = expression;
+  $("#mathResult").textContent = result;
+}
+
+function highlightCard(playerId, className) {
+  clearCardClass(className);
+  const card = getPlayerCard(playerId);
+  if (card) card.classList.add(className);
+}
+
+function clearCardClass(className) {
+  $$(".player-card").forEach((card) => card.classList.remove(className));
+}
+
+function getPlayerCard(playerId) {
+  return $(`.player-card[data-player-id="${playerId}"]`);
 }
 
 async function animateNumber(selector, finalValue, duration) {
   const element = $(selector);
-  const steps = 45;
+  const steps = 42;
   const interval = duration / steps;
 
   for (let step = 1; step <= steps; step++) {
@@ -443,190 +949,32 @@ async function animateNumber(selector, finalValue, duration) {
     const value = finalValue * eased;
 
     element.textContent = value.toFixed(2);
-
     await sleep(interval);
   }
 
   element.textContent = finalValue.toFixed(2);
 }
 
-function applyPenalties(result) {
-  result.penalties.forEach((penalty) => {
-    const player = state.players.find((item) => item.id === penalty.playerId);
+function goToNextRound() {
+  if (!state || state.status !== "playing" || !state.pendingNextRound) return;
 
-    if (!player) return;
-
-    player.points -= penalty.pointsLost;
-
-    if (player.points <= -10) {
-      player.points = -10;
-      player.eliminated = true;
-    }
-  });
-}
-
-function showRoundResult(result) {
-  $("#resultBox").classList.remove("hidden");
-
-  const winnerNames = result.winners.map(getFullName).join(", ");
-
-  $("#roundWinner").textContent = `${winnerNames} venceu`;
-  $("#finalRequiredNumber").textContent = result.requiredNumber.toFixed(2);
-
-  const container = $("#roundDetails");
-  container.innerHTML = "";
-
-  const playersInRound = getPlayersFromResult(result);
-
-  playersInRound.forEach((player) => {
-    const choice = result.choices[player.id];
-    const distance = result.distances[player.id];
-    const won = result.winnerIds.has(player.id);
-
-    const card = document.createElement("div");
-    card.className = "round-result-card";
-
-    if (player.main) {
-      card.classList.add("main-result");
-    }
-
-    if (won) {
-      card.classList.add("winner-result");
-    }
-
-    card.innerHTML = `
-      <div class="result-player-name ${player.main ? "main-name" : ""}">
-        ${escapeHtml(getFullName(player))}
-      </div>
-
-      <div class="result-choice">
-        <span>Escolheu</span>
-        <strong>${choice}</strong>
-      </div>
-
-      <div class="result-distance">
-        <span>Distância</span>
-        <strong>${distance.toFixed(2)}</strong>
-      </div>
-
-      <div class="result-status ${won ? "win" : "lose"}">
-        ${won ? "Venceu" : "Perdeu 1 ponto"}
-      </div>
-    `;
-
-    container.appendChild(card);
-  });
-
-  $("#message").textContent =
-    `Número que precisava alcançar: ${result.requiredNumber.toFixed(2)}.`;
-}
-
-function updateInterface() {
-  if (!state) return;
-
-  $("#roundNumber").textContent = state.round;
-  $("#activePlayers").textContent = getActivePlayers().length;
-
-  renderPlayers();
-  renderHistory();
-}
-
-function renderPlayers() {
-  const container = $("#playersStrip");
-  container.innerHTML = "";
-
-  const currentPlayer = getNextHumanPlayer();
-
-  state.players.forEach((player) => {
-    const card = document.createElement("div");
-
-    card.className = "player-card";
-
-    if (player.main) {
-      card.classList.add("main-player");
-    }
-
-    if (player.eliminated) {
-      card.classList.add("eliminated");
-    }
-
-    if (currentPlayer && currentPlayer.id === player.id) {
-      card.classList.add("current");
-    }
-
-    const playerType = player.type === "bot" ? "Bot" : "Jogador real";
-    const pointsClass = player.points <= -7 ? "danger" : "";
-    const statusText = player.eliminated ? "Eliminado" : "Ativo";
-    const statusClass = player.eliminated ? "dead" : "";
-
-    card.innerHTML = `
-      <div class="player-name">${escapeHtml(getFullName(player))}</div>
-      <div class="player-type">${playerType}</div>
-      <div class="points ${pointsClass}">${player.points}</div>
-      <div class="status-pill ${statusClass}">${statusText}</div>
-    `;
-
-    container.appendChild(card);
-  });
-}
-
-function renderHistory() {
-  const historyList = $("#historyList");
-  historyList.innerHTML = "";
-
-  if (!state.history.length) {
-    historyList.innerHTML = `<p class="empty">Nenhuma rodada jogada ainda.</p>`;
-    return;
-  }
-
-  [...state.history].reverse().forEach((round) => {
-    const winners = round.winners.map(getFullName).join(", ");
-
-    const item = document.createElement("div");
-    item.className = "history-item";
-
-    item.innerHTML = `
-      <strong>Rodada ${round.round}</strong>
-      <p>
-        Número necessário: ${round.requiredNumber.toFixed(2)}
-        | Vencedor: ${escapeHtml(winners)}
-      </p>
-    `;
-
-    historyList.appendChild(item);
-  });
+  state.round += 1;
+  state.pendingNextRound = false;
+  $("#nextRoundBtn").classList.add("hidden");
+  startRound();
 }
 
 function checkEndGame() {
   const activePlayers = getActivePlayers();
-  const mainPlayer = state.players.find((player) => player.main);
-
-  if (state.mode === "solo" && mainPlayer.eliminated) {
-    endGame(
-      "Você foi eliminado",
-      `${getFullName(mainPlayer)} chegou a -10 pontos.`
-    );
-
-    return true;
-  }
 
   if (activePlayers.length === 1) {
     const winner = activePlayers[0];
-
-    endGame(
-      `${getFullName(winner)} venceu`,
-      "Todos os outros jogadores chegaram a -10 pontos."
-    );
-
+    endGame(`${getFullName(winner)} venceu`, "Todos os outros jogadores chegaram a -10 pontos.");
     return true;
   }
 
   if (activePlayers.length === 0) {
-    endGame(
-      "Todos foram eliminados",
-      "Nenhum jogador continuou ativo na partida."
-    );
-
+    endGame("Todos foram eliminados", "Nenhum jogador continuou ativo na partida.");
     return true;
   }
 
@@ -635,7 +983,6 @@ function checkEndGame() {
 
 function endGame(title, text) {
   state.status = "ended";
-
   $("#endTitle").textContent = title;
   $("#endText").textContent = text;
   $("#endModal").classList.remove("hidden");
@@ -643,21 +990,21 @@ function endGame(title, text) {
 
 function resetGame() {
   state = null;
-
   $("#setup").classList.remove("hidden");
   $("#game").classList.add("hidden");
   $("#endModal").classList.add("hidden");
-  $("#resultBox").classList.add("hidden");
-  $("#calculationBox").classList.add("hidden");
-
+  $("#arenaBoard").classList.add("hidden");
+  $("#choicePanel").classList.remove("hidden");
+  $("#nextRoundBtn").classList.add("hidden");
   $("#playerNumber").value = "";
   $("#message").textContent = "";
+  setNumberGridDisabled(false);
+  updateActiveRulesPanel();
+  setMathLine("", "", true);
 }
 
 function getPlayersFromResult(result) {
-  return state.players.filter((player) => {
-    return result.choices[player.id] !== undefined;
-  });
+  return state.players.filter((player) => result.choices[player.id] !== undefined);
 }
 
 function getActivePlayers() {
