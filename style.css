@@ -1212,3 +1212,241 @@ body.theme-dark .modal-box .btn:hover {
   color: #07111f;
   background: var(--text);
 }
+
+
+/* Ajuste v18: botão superior e janela central com regras */
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.hero-actions .theme-toggle {
+  margin-top: 0;
+}
+
+.rules-open-btn {
+  min-height: 42px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.66);
+  color: var(--navy);
+  cursor: pointer;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing: 0.02em;
+  transition:
+    transform .15s ease,
+    background .15s ease,
+    border-color .15s ease,
+    color .15s ease;
+}
+
+.rules-open-btn::before {
+  content: "♦ ";
+  color: var(--red);
+}
+
+.rules-open-btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--navy-3);
+  background: #fff;
+}
+
+.rules-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.rules-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 19, 36, 0.58);
+  backdrop-filter: blur(10px);
+}
+
+.rules-modal-box {
+  position: relative;
+  z-index: 1;
+  width: min(760px, 100%);
+  max-height: min(82vh, 760px);
+  overflow: auto;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--line);
+  background: var(--panel-solid);
+  box-shadow: 0 30px 90px rgba(6, 19, 36, 0.28);
+  padding: 30px;
+  animation: rulesModalIn .22s ease both;
+}
+
+.rules-modal-box h2 {
+  margin: 0 0 20px;
+  color: var(--navy);
+  font-size: clamp(34px, 5vw, 58px);
+  line-height: .92;
+  letter-spacing: -0.06em;
+}
+
+.rules-modal-box h2::after {
+  content: " ♦";
+  color: var(--red);
+  font-size: .55em;
+  vertical-align: .22em;
+}
+
+.rules-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--navy);
+  cursor: pointer;
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 850;
+}
+
+.rules-close-btn:hover {
+  border-color: var(--navy-3);
+  background: var(--navy);
+  color: #fff;
+}
+
+.rules-content {
+  display: grid;
+  gap: 12px;
+}
+
+.rules-section {
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.rules-section strong {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--navy);
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.rules-section strong::before {
+  content: "♦ ";
+  color: var(--red);
+}
+
+.rules-section p {
+  margin: 0;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+
+.modal-open {
+  overflow: hidden;
+}
+
+@keyframes rulesModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+body.theme-dark .rules-open-btn {
+  background: rgba(237, 246, 255, 0.08);
+  color: var(--text);
+  border-color: var(--line);
+}
+
+body.theme-dark .rules-open-btn:hover {
+  background: rgba(237, 246, 255, 0.14);
+  border-color: var(--line-strong);
+}
+
+body.theme-dark .rules-modal-backdrop {
+  background: rgba(2, 8, 15, 0.78);
+}
+
+body.theme-dark .rules-modal-box {
+  background: var(--panel-solid);
+  border-color: var(--line);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.48);
+}
+
+body.theme-dark .rules-close-btn {
+  background: rgba(237, 246, 255, 0.08);
+  color: var(--text);
+  border-color: var(--line);
+}
+
+body.theme-dark .rules-close-btn:hover {
+  background: var(--text);
+  color: #07111f;
+  border-color: var(--text);
+}
+
+body.theme-dark .rules-section {
+  background: rgba(13, 34, 56, 0.78);
+  border-color: var(--line);
+}
+
+@media (max-width: 620px) {
+  .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .rules-open-btn,
+  .theme-toggle {
+    width: 100%;
+  }
+
+  .rules-modal {
+    padding: 14px;
+  }
+
+  .rules-modal-box {
+    padding: 24px 18px;
+    border-radius: 22px;
+  }
+
+  .rules-close-btn {
+    top: 12px;
+    right: 12px;
+  }
+}
+
+
+/* Ajuste v19: garante que a janela de regras fique acima de todos os elementos */
+.rules-modal {
+  z-index: 9999 !important;
+}
+
+.rules-modal.hidden {
+  display: none !important;
+}
+
+.rules-modal:not(.hidden) {
+  display: grid !important;
+}
+
+.rules-open-btn {
+  pointer-events: auto;
+}

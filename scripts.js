@@ -34,6 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const numberGrid = $("#numberGrid");
   const nextRoundBtn = $("#nextRoundBtn");
   const themeToggleBtn = $("#themeToggleBtn");
+  const rulesBtn = $("#rulesBtn");
+  const closeRulesBtn = $("#closeRulesBtn");
+  const rulesModal = $("#rulesModal");
 
   if (gameMode) gameMode.addEventListener("change", updateModeView);
   if (startBtn) startBtn.addEventListener("click", startGame);
@@ -41,6 +44,46 @@ document.addEventListener("DOMContentLoaded", () => {
   if (nextRoundBtn) nextRoundBtn.addEventListener("click", goToNextRound);
   if (numberGrid) numberGrid.addEventListener("click", handleNumberGridClick);
   if (themeToggleBtn) themeToggleBtn.addEventListener("click", toggleTheme);
+  if (rulesBtn) rulesBtn.addEventListener("click", openRulesModal);
+  if (closeRulesBtn) closeRulesBtn.addEventListener("click", closeRulesModal);
+  if (rulesModal) {
+    rulesModal.addEventListener("click", (event) => {
+      if (event.target.matches("[data-close-rules]")) {
+        closeRulesModal();
+      }
+    });
+
+function openRulesModal() {
+  const modal = $("#rulesModal");
+
+  if (!modal) return;
+
+  modal.classList.remove("hidden");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+
+  const closeButton = $("#closeRulesBtn");
+  if (closeButton) closeButton.focus();
+}
+
+function closeRulesModal() {
+  const modal = $("#rulesModal");
+
+  if (!modal || modal.classList.contains("hidden")) return;
+
+  modal.classList.add("hidden");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
+}
+
+
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeRulesModal();
+    }
+  });
 
   applySavedTheme();
   buildNumberGrid();
@@ -1031,3 +1074,53 @@ function escapeHtml(value) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
+
+
+/* Ajuste v19: abertura robusta da janela de regras */
+function forceOpenRulesModal() {
+  const modal = document.querySelector("#rulesModal");
+
+  if (!modal) return;
+
+  modal.classList.remove("hidden");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+}
+
+function forceCloseRulesModal() {
+  const modal = document.querySelector("#rulesModal");
+
+  if (!modal) return;
+
+  modal.classList.add("hidden");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const rulesButton = document.querySelector("#rulesBtn");
+  const closeButton = document.querySelector("#closeRulesBtn");
+  const rulesModal = document.querySelector("#rulesModal");
+
+  if (rulesButton) {
+    rulesButton.onclick = forceOpenRulesModal;
+  }
+
+  if (closeButton) {
+    closeButton.onclick = forceCloseRulesModal;
+  }
+
+  if (rulesModal) {
+    rulesModal.addEventListener("click", (event) => {
+      if (event.target.matches("[data-close-rules]")) {
+        forceCloseRulesModal();
+      }
+    });
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    forceCloseRulesModal();
+  }
+});
