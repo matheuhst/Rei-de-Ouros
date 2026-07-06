@@ -111,7 +111,7 @@ function updateThemeButton(isDark) {
 
   if (!button) return;
 
-  button.textContent = isDark ? "Modo claro" : "Modo dark";
+  button.textContent = isDark ? "Modo Claro" : "Modo Escuro";
   button.setAttribute("aria-pressed", String(isDark));
 }
 
